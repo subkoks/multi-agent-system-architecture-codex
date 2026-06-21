@@ -37,16 +37,16 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ## Phase 2 — Closed-loop eval gate (1 day)
 
-### 2a. `skills/closed-loop/SKILL.md`
+### 2a. `skills/closed-loop/SKILL.md` ✅ authored + deployed (2026-06-21, branch phase-2-closed-loop)
 - One reusable definition of "done": tests pass + reviewer finds nothing critical + type-check clean + lint clean. Loop: `implement → verify → gate → (fail ? loop back : ship)`. Hard budget/turn cap. Per-language gate commands (TS: vitest+tsc, Python: pytest+ruff, Rust: cargo test).
 - **Acceptance:** on a deliberately-broken change it loops until the gate passes or budget hits; never reports "done" with a failing gate.
 
-### 2b. Sample review Workflow
+### 2b. Sample review Workflow ✅ authored (2026-06-21, branch phase-2-closed-loop)
 - A `Workflow` script that fans review across dimensions (correctness/security/perf) → adversarially verifies each finding → returns confirmed-only. Store as `reference/review-workflow.example.js`.
 - **Acceptance:** runs end-to-end on a sample diff; output is severity-ranked, deduped.
 
 ### Phase 2 deploy (after review)
-- [ ] Deploy `skills/closed-loop/`.
+- [x] Deploy `skills/closed-loop/` → `~/.claude/skills/closed-loop/` (2026-06-21).
 
 ---
 
