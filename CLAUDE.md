@@ -3,7 +3,7 @@
 Builds a lean, native-first multi-agent + loop layer for the BLACK.TERMINAL Claude Code setup. Authoritative plan: `PLAN.md`. Build steps: `BUILD.md`. Facts/sources: `reference/research-notes.md`.
 
 ## Working agreement (auto mode)
-- This project runs in **acceptEdits** mode: file authoring is autonomous; non-allowlisted Bash still gates. Work without asking for safe, reversible steps.
+- This project runs in **acceptEdits** mode: file authoring is autonomous; non-allowlisted Bash still gates. Work without asking for safe, reversible steps. Note: as of CC v2.1.158+, executable-file writes (scripts, hooks) may still prompt even in acceptEdits.
 - Build on a **feature branch**, never `main`. One logical change per commit.
 - **Author here → review → deploy.** Agent/skill files are written in `agents/` and `skills/` first, then deployed to `~/.claude/...` only at the explicit deploy step of a phase. Never auto-deploy into `~/.claude/`.
 
@@ -18,4 +18,4 @@ Builds a lean, native-first multi-agent + loop layer for the BLACK.TERMINAL Clau
 - Keep the roster small: add an agent only when it reduces friction more than it adds maintenance.
 
 ## Resume
-`Read BUILD.md and start the next unchecked phase.` Build begins at Phase 1.
+All BUILD.md phases complete. Run `governor` for periodic audits or extend with a new phase.

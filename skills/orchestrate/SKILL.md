@@ -32,6 +32,8 @@ Workflow        → Workflow tool with pipeline()/parallel(); use isolation: wor
 
 Rule: no loop without an eval gate or a hard turn/budget cap. Unbounded = slop.
 
+**Depth cap:** nested subagent chains are capped at 5 levels (CC v2.1.166+) — plan delegation trees accordingly.
+
 ## Step 3 — Model-tier via `bsela_route`, then map to specialist
 
 **Default: call `bsela_route` first for every delegated subtask.**
