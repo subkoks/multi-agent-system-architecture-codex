@@ -1,4 +1,4 @@
-# claude-agent-system
+# multi-agent-system-architecture-claude-cli
 
 Lean, native-first multi-agent + loop architecture for the BLACK.TERMINAL Claude Code setup.
 
@@ -22,7 +22,7 @@ The main `claude` session **is** the orchestrator ("NEXUS" persona). Subagents a
 ## Layout
 
 ```
-claude-agent-system/
+multi-agent-system-architecture-claude-cli/
 ├── README.md      ← you are here
 ├── PLAN.md        ← the accepted architecture plan (source of truth)
 ├── BUILD.md       ← phased resume map: exact files to create + acceptance criteria
@@ -35,7 +35,7 @@ claude-agent-system/
 ## How to resume (next session)
 
 ```
-cd ~/Projects/claude-agent-system
+cd ~/Projects/multi-agent-system-architecture-claude-cli
 claude
 > Read BUILD.md and start Phase 1.
 ```

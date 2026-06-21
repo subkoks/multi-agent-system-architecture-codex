@@ -7,7 +7,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 ---
 
 ## Pre-flight (every session)
-- [ ] `cd ~/Projects/claude-agent-system` and confirm on a feature branch.
+- [ ] `cd ~/Projects/multi-agent-system-architecture-claude-cli` and confirm on a feature branch.
 - [ ] Re-read `PLAN.md` §3–§7 (architecture, roster, loops, anti-patterns).
 - [ ] Verify nothing in `~/.claude/` was changed since last session (`ls -la ~/.claude/agents ~/.claude/skills`).
 

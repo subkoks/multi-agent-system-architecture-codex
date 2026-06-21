@@ -2,3 +2,4 @@
 UPGRADE-PROPOSALS.md
 *.log
 .DS_Store
+.claude/settings.local.json
