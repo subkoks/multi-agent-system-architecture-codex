@@ -31,7 +31,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 ### Phase 1 deploy (after review)
 - [x] Copy `agents/planner.md` → `~/.claude/agents/planner.md` (2026-06-21).
 - [x] Copy `skills/orchestrate/` → `~/.claude/skills/orchestrate/` (2026-06-21).
-- [ ] Paste NEXUS block into `~/.claude/CLAUDE.md` (governance — owner applies manually; block in `reference/nexus-persona.md`).
+- [x] Paste NEXUS block into `~/.claude/CLAUDE.md` (2026-06-21 — applied manually by owner).
 
 ---
 
