@@ -52,17 +52,19 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ## Phase 3 — Governor on BSELA (1–2 days)
 
-### 3a. `agents/governor.md`
+### 3a. `agents/governor.md` ✅ authored + deployed (2026-06-21, branch phase-3-governor)
 - **Frontmatter:** `name: governor`, `description:` (system audit / "what should improve" / drift check), `tools: Read, Grep, Glob, Bash, WebFetch, WebSearch` + BSELA MCP tools (`bsela_audit`, `bsela_lessons`, `bsela_errors`, `bsela_status`), `model: opus`.
 - **Job:** read BSELA lessons + recurring error categories + `bsela_audit`; WebFetch Anthropic/Claude Code changelog & docs (flag new features like `/loop` was); detect config drift vs `~/.claude/settings.json` + agent/skill prompt quality (delegate prompt fixes to `prompt-systems-lead`); **write dated proposals only** to `UPGRADE-PROPOSALS.md`. **Never edits governance files.**
 - **Acceptance:** dry-run produces a dated proposals file with concrete, sourced, prioritized items; zero writes outside the proposals file.
 
-### 3b. Weekly `/schedule` routine
-- Cloud cron (survives session end). Suggested cadence: weekly, off-peak, off-:00 minute. Routine = run governor → append proposals → notify.
-- **Acceptance:** routine registered; one manual run verified; respects the 7-day note for in-session loops vs. cloud schedule.
+### 3b. Weekly `/schedule` routine ⚠ DESCOPED (2026-06-21)
+- Cloud CCR can't reach local BSELA MCP or local files — the routine would only cover ~25% of GOVERNOR's job (docs WebFetch only).
+- **Decision:** GOVERNOR is on-demand. Invoke with "run governor" before big changes or periodically. No cron registered.
+- If BSELA ever gets a cloud MCP connector, revisit this step.
 
 ### Phase 3 deploy (after review)
-- [ ] Deploy `agents/governor.md`; register the schedule.
+- [x] Deploy `agents/governor.md` → `~/.claude/agents/governor.md` (2026-06-21).
+- [x] Schedule descoped — on-demand invocation is the correct primitive given local MCP constraint.
 
 ---
 
