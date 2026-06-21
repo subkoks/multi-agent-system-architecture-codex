@@ -7,25 +7,25 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 ---
 
 ## Pre-flight (every session)
-- [ ] `cd ~/Projects/multi-agent-system-architecture-claude-cli` and confirm on a feature branch.
-- [ ] Re-read `PLAN.md` §3–§7 (architecture, roster, loops, anti-patterns).
-- [ ] Verify nothing in `~/.claude/` was changed since last session (`ls -la ~/.claude/agents ~/.claude/skills`).
+- [x] `cd ~/Projects/multi-agent-system-architecture-claude-cli` and confirm on a feature branch.
+- [x] Re-read `PLAN.md` §3–§7 (architecture, roster, loops, anti-patterns).
+- [x] Verify nothing in `~/.claude/` was changed since last session (`ls -la ~/.claude/agents ~/.claude/skills`).
 
 ---
 
 ## Phase 1 — Planner + orchestration convention (½ day)
 
-### 1a. `agents/planner.md`
+### 1a. `agents/planner.md` ✅ authored (2026-06-21, branch phase-1-planner-orchestrate)
 - **Frontmatter:** `name: planner`, `description:` (trigger on "plan", "design", ">5 files", "architecture", "before a refactor"), `tools: Read, Grep, Glob, WebFetch, WebSearch` (read-only — planners don't edit), `model: opus`.
 - **System prompt must encode:** my AGENTS.md operating principles (lean files, solve-exactly-asked, named constants, early returns); Solana-first + security-gated defaults; output = 3–7 phase plan with trade-offs, risks, file list, acceptance criteria; pulls official standards via WebFetch when the domain warrants; defers to `claude-api` skill before any LLM/Anthropic claim.
 - **Reuse, don't duplicate:** wrap the existing `planner-engineer` skill's discipline; add personalization the skill lacks.
 - **Acceptance:** on a real feature request it returns a phased plan in my idioms without re-asking my stack; makes no edits.
 
-### 1b. `skills/orchestrate/SKILL.md`
+### 1b. `skills/orchestrate/SKILL.md` ✅ authored (2026-06-21, branch phase-1-planner-orchestrate)
 - Codifies the delegation pattern: classify task → pick loop type (open/closed/dynamic/Workflow) → delegate to specialists → enforce eval gate → report. References `bsela_route` for model-tiering.
 - **Acceptance:** invoking `/orchestrate <task>` produces a delegation plan naming which existing subagents/loops to use.
 
-### 1c. NEXUS persona (CLAUDE.md)
+### 1c. NEXUS persona (CLAUDE.md) ✅ draft authored → `reference/nexus-persona.md` (2026-06-21)
 - Draft a short "NEXUS — orchestrator persona" block (how the main session plans/routes/keeps loops moving + when to delegate vs. do-inline). Save the **draft** to `reference/nexus-persona.md`. **Do NOT edit `~/.claude/CLAUDE.md` or `~/AGENTS.md` yet** — that's a governance file; present the draft for approval first.
 
 ### Phase 1 deploy (after review)
