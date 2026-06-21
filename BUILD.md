@@ -29,9 +29,9 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 - Draft a short "NEXUS — orchestrator persona" block (how the main session plans/routes/keeps loops moving + when to delegate vs. do-inline). Save the **draft** to `reference/nexus-persona.md`. **Do NOT edit `~/.claude/CLAUDE.md` or `~/AGENTS.md` yet** — that's a governance file; present the draft for approval first.
 
 ### Phase 1 deploy (after review)
-- [ ] Symlink/copy `agents/planner.md` → `~/.claude/agents/planner.md`.
-- [ ] Symlink/copy `skills/orchestrate/` → `~/.claude/skills/orchestrate/`.
-- [ ] Approve + paste NEXUS block into CLAUDE.md (governance — explicit OK required).
+- [x] Copy `agents/planner.md` → `~/.claude/agents/planner.md` (2026-06-21).
+- [x] Copy `skills/orchestrate/` → `~/.claude/skills/orchestrate/` (2026-06-21).
+- [ ] Paste NEXUS block into `~/.claude/CLAUDE.md` (governance — owner applies manually; block in `reference/nexus-persona.md`).
 
 ---
 
