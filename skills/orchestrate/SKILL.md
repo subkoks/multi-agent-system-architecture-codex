@@ -32,7 +32,22 @@ Workflow        → Workflow tool with pipeline()/parallel(); use isolation: wor
 
 Rule: no loop without an eval gate or a hard turn/budget cap. Unbounded = slop.
 
-## Step 3 — Map to specialists
+## Step 3 — Model-tier via `bsela_route`, then map to specialist
+
+**Default: call `bsela_route` first for every delegated subtask.**
+
+```
+bsela_route(task: "<subtask description>")
+→ returns: { role: planner|builder|reviewer|judge|researcher|auditor|debugger|... , model: "..." }
+
+Role → model mapping:
+  planner / judge / auditor  →  claude-opus-4-8   (hard reasoning)
+  builder / debugger         →  claude-sonnet-4-6  (standard implementation)
+  researcher / distiller     →  claude-sonnet-4-6  (standard)
+  trivial / batch / memory   →  claude-haiku-4-5-20251001  (cheap)
+```
+
+Use the returned model when spawning the subagent. Override only if the specialist has a hardcoded `model:` in its frontmatter.
 
 Use existing subagents first. New agent only when it reduces friction more than maintenance.
 
@@ -49,13 +64,8 @@ Use existing subagents first. New agent only when it reduces friction more than 
 | Cited web research | `web-researcher` |
 | Agent/prompt quality | `prompt-systems-lead` |
 | Docs | `doc-writer` |
-| Model/role tiering | `bsela_route` MCP tool |
-
-Model tiering via `bsela_route`:
-```
-Call bsela_route with the subtask description → it returns recommended model role.
-Haiku → trivial/batch  Sonnet → standard  Opus → planning/hard reasoning
-```
+| System audit / drift / BSELA | `governor` |
+| Scoped parallel file changes | `builder` (worktree-isolated via Workflow) |
 
 ## Step 4 — Enforce eval gate (closed loops)
 
@@ -122,8 +132,9 @@ Output format:
 /orchestrate "migrate 40 route files from Express to Hono"
 → Category: Workflow fan-out
 → Loop: Workflow pipeline(files, transform, verify) isolation: worktree
-→ Specialists: test-runner (per-file verify), code-reviewer (sample check)
+→ Specialists: builder (per-file transform, worktree-isolated), test-runner (verify), code-reviewer (sample check)
 → Budget cap: set in Workflow budget.total
+→ bsela_route("transform Express route file to Hono") → builder role → claude-sonnet-4-6
 ```
 
 ## Self-check before handing plan to user

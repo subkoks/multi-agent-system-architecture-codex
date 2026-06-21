@@ -69,8 +69,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 ---
 
 ## Phase 4 — Optional (½ day)
-- [ ] `agents/builder.md` — scoped implementer for worktree-isolated parallel work (`tools: Read, Edit, Write, Bash, Grep, Glob`, `model: sonnet`, **forbidden** from editing governance files).
-- [ ] Make `bsela_route` model-tiering the default routing for delegated subtasks.
+- [x] `agents/builder.md` — scoped implementer for worktree-isolated parallel work (`tools: Read, Edit, Write, Bash, Grep, Glob`, `model: sonnet`, **forbidden** from editing governance files). Deployed 2026-06-21.
+- [x] `bsela_route` model-tiering wired as default Step 3 in `/orchestrate` skill — call before picking model for any delegated subtask. `builder` added to specialist table. Deployed 2026-06-21.
 
 ---
 
