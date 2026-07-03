@@ -41,3 +41,17 @@ claude
 ```
 
 Build is phased and reversible. Each agent/skill is authored **here** first, reviewed, then deployed to `~/.claude/agents/` and `~/.claude/skills/` (symlink or copy) — deployment is a deliberate step, not automatic.
+
+## Codex CLI
+
+This repo now includes a root `AGENTS.md` and `.codex/config.toml`, so Codex CLI can use the same project guidance in this workspace.
+
+Recommended entrypoint:
+
+```
+cd ~/Projects/multi-agent-system-architecture-claude-cli
+codex
+> Read AGENTS.md, BUILD.md, and PLAN.md before making changes.
+```
+
+The Claude Code docs remain the canonical architecture source for this repo. Codex uses the same repo instructions and workspace defaults, not a separate fork of the workflow.
