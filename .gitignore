@@ -3,3 +3,8 @@ UPGRADE-PROPOSALS.md
 *.log
 .DS_Store
 .claude/settings.local.json
+
+# repo-local Codex config
+!.codex/
+.codex/*
+!.codex/config.toml
