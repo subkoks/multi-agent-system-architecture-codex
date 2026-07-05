@@ -61,7 +61,7 @@ Flag anything not yet reflected in `~/.claude/settings.json`, agent frontmatter,
 ### 3. Config drift check
 
 Read `~/.claude/settings.json`. Check for:
-- `model:` — is it the current recommended model ID? (Current as of 2026-06-21: `claude-opus-4-8` main loop; `claude-sonnet-4-6` subagents; `claude-haiku-4-5-20251001` trivial.)
+- `model:` — is it the current recommended model ID? (Current as of 2026-07-04: `claude-fable-5` main loop; `claude-sonnet-5` standard subagents; `claude-opus-4-8` hard-reasoning specialists; `claude-haiku-4-5-20251001` trivial.)
 - `effortLevel:` — appropriate for the setup?
 - `enableWorkflows:` — should be `true`.
 - `permissions.allow` / `permissions.deny` — any stale patterns (tools removed from Claude Code, paths that no longer exist)?

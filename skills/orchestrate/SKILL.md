@@ -26,8 +26,8 @@ Inline          → just do it; no subagent needed
 Plan            → delegate to `planner` subagent → review → then execute
 Closed-loop     → /closed-loop skill: implement → gate(tests+review+types) → iterate or ship
 Open-loop       → /loop dynamic (no interval); bound with turn/budget cap
-Recurring       → /loop <interval> (session) OR /schedule (cloud cron, survives exit)
-Workflow        → Workflow tool with pipeline()/parallel(); use isolation: worktree for parallel file edits
+Recurring       → /loop <interval> (session) OR /schedule (cloud cron, survives exit) [Cursor: /loop interval or automate skill]
+Workflow        → Workflow tool with pipeline()/parallel(); use isolation: worktree for parallel file edits [Cursor: Task tool parallel subagents]
 ```
 
 Rule: no loop without an eval gate or a hard turn/budget cap. Unbounded = slop.
@@ -44,8 +44,8 @@ bsela_route(task: "<subtask description>")
 
 Role → model mapping:
   planner / judge / auditor  →  claude-opus-4-8   (hard reasoning)
-  builder / debugger         →  claude-sonnet-4-6  (standard implementation)
-  researcher / distiller     →  claude-sonnet-4-6  (standard)
+  builder / debugger         →  claude-sonnet-5    (standard implementation)
+  researcher / distiller     →  claude-sonnet-5    (standard)
   trivial / batch / memory   →  claude-haiku-4-5-20251001  (cheap)
 ```
 
@@ -67,7 +67,20 @@ Use existing subagents first. New agent only when it reduces friction more than 
 | Agent/prompt quality | `prompt-systems-lead` |
 | Docs | `doc-writer` |
 | System audit / drift / BSELA | `governor` |
-| Scoped parallel file changes | `builder` (worktree-isolated via Workflow) |
+| Scoped parallel file changes | `builder` (worktree-isolated via Workflow; Cursor: Task parallel + builder) |
+
+## Cursor notes
+
+When the orchestrator runs in **Cursor** (not Claude Code CLI), map Claude-only primitives:
+
+| Claude Code | Cursor |
+|---|---|
+| `Workflow` tool | **Task tool** with 2–3 parallel subagents in one message |
+| `/schedule` (cloud cron) | **`/loop` `<interval>`** (session) or **automate skill** |
+| Subagent spawn | **Task tool** → subagent name |
+| `bsela_route` | BSELA MCP (`user-bsela`) — same tool, call before delegating |
+
+In Cursor delegation plans, say "Task parallel: builder + test-runner + code-reviewer" instead of "Workflow pipeline". For recurring work, prefer `/loop 30m …` over `/schedule`.
 
 ## Step 4 — Enforce eval gate (closed loops)
 
@@ -106,7 +119,7 @@ Output format:
 
 **Delegate to planner when:** request is ambiguous, >5 files, or multiple valid approaches exist — never plan inline.
 
-**Delegate to Workflow when:** ≥3 independent file sets need parallel processing, or you need adversarial verification (reviewer + skeptic pass on same findings).
+**Delegate to Workflow when:** ≥3 independent file sets need parallel processing, or you need adversarial verification (reviewer + skeptic pass on same findings). **In Cursor:** use Task parallel subagents instead of Workflow.
 
 **Do inline when:** task is a single clear step, <3 files, no ambiguity, and the gate is trivially checkable.
 
@@ -136,7 +149,8 @@ Output format:
 → Loop: Workflow pipeline(files, transform, verify) isolation: worktree
 → Specialists: builder (per-file transform, worktree-isolated), test-runner (verify), code-reviewer (sample check)
 → Budget cap: set in Workflow budget.total
-→ bsela_route("transform Express route file to Hono") → builder role → claude-sonnet-4-6
+→ bsela_route("transform Express route file to Hono") → builder role → claude-sonnet-5
+→ Cursor variant: Task parallel builder (per-file batches) + test-runner + code-reviewer sample
 ```
 
 ## Self-check before handing plan to user

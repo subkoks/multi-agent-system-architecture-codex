@@ -22,22 +22,19 @@ Author here first, then sync live editors:
 
 ```bash
 cd ~/Projects/multi-agent-system-architecture-claude-cli
-
-# 1. Deploy to Claude (after review)
-cp agents/planner.md ~/.claude/agents/
-cp agents/governor.md ~/.claude/agents/
-cp agents/builder.md ~/.claude/agents/
-cp -R skills/orchestrate ~/.claude/skills/
-cp -R skills/closed-loop ~/.claude/skills/
-
-# 2. Sync Cursor from Claude
-~/.agents/scripts/integrate-cursor-from-claude.sh
+scripts/deploy-to-claude-and-cursor.sh          # deploy + integrate
+# scripts/deploy-to-claude-and-cursor.sh --dry-run  # preview only
 ~/.agents/scripts/sync-check.sh
-
-# 3. Restart Cursor (MCP + hooks)
+# Restart Cursor (MCP + hooks)
 ```
 
-Re-run the integrate script after any Claude-side agent/skill change even if you did not edit this repo.
+Manual copy (if you prefer):
+
+```bash
+cp agents/{planner,governor,builder}.md ~/.claude/agents/
+cp -R skills/{orchestrate,closed-loop} ~/.claude/skills/
+~/.agents/scripts/integrate-cursor-from-claude.sh
+```
 
 ## Usage in Cursor
 
