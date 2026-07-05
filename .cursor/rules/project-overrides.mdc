@@ -1,0 +1,18 @@
+---
+description: Project-specific Cursor overrides. Extend only — do not duplicate ~/AGENTS.md.
+alwaysApply: true
+---
+
+# Project overrides
+
+Global baseline: `~/AGENTS.md`. Hub: `~/Projects/AGENTS.md` when under `~/Projects/`.
+
+Add project-specific rules below.
+
+## Architecture repo conventions
+
+- Source of truth: `PLAN.md`, `BUILD.md`, `agents/`, `skills/`
+- Deploy path: repo → `~/.claude/` → `~/.agents/scripts/integrate-cursor-from-claude.sh`
+- Never auto-edit `~/AGENTS.md`, `~/.claude/settings.json`, or `~/.cursor/hooks.json` from here
+- GOVERNOR writes only to `UPGRADE-PROPOSALS.md` (gitignored)
+- Cursor integration details: `CURSOR.md`

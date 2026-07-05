@@ -74,6 +74,33 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ---
 
+## Phase C — Cursor integration (1 day)
+
+### C1. Agent sync quality ✅ (2026-07-05)
+- **Fix:** `integrate-cursor-from-claude.sh` folds YAML `description: >` into single-line Cursor frontmatter.
+- **Acceptance:** `~/.cursor/agents/planner/agent.md` shows full description in agent picker.
+
+### C2. BSELA MCP parity ✅ (2026-07-05)
+- **Fix:** `integrate-cursor-from-claude.sh` merges `memory` + `bsela` into `~/.cursor/mcp.json` (non-destructive).
+- **Acceptance:** `bsela_status` and `bsela_route` callable from Cursor after restart.
+
+### C3. Cursor-native orchestration ✅ (2026-07-05)
+- **`skills/orchestrate/SKILL.md`:** Cursor notes section (Workflow → Task parallel, /schedule → /loop or automate).
+- **`cursor-nexus.mdc`:** recurring row uses automate skill; loop rules drop cloud `/schedule`.
+- **Acceptance:** `/orchestrate` in Cursor produces Task-parallel plans, not Workflow-only plans.
+
+### C4. Docs + deploy script ✅ (2026-07-05)
+- **`CURSOR.md`:** deploy ritual, primitive mapping, usage table.
+- **`scripts/deploy-to-claude-and-cursor.sh`:** one-command repo → Claude → Cursor sync.
+- **`README.md`:** status updated (Claude complete, Cursor integrated).
+- **Acceptance:** `scripts/deploy-to-claude-and-cursor.sh --dry-run` lists all copy + integrate steps.
+
+### Phase C deploy (after review)
+- [x] Run `scripts/deploy-to-claude-and-cursor.sh` (2026-07-05).
+- [x] Restart Cursor to load MCP changes.
+
+---
+
 ## Guardrails (apply to all phases)
 - Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.
