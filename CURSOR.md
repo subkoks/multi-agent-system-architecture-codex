@@ -34,7 +34,7 @@ Manual copy (if you prefer):
 ```bash
 cp agents/{planner,governor,builder}.md ~/.claude/agents/
 cp -R skills/{orchestrate,closed-loop} ~/.claude/skills/
-~/.agents/scripts/integrate-cursor-from-claude.sh
+scripts/integrate-cursor-from-claude.sh   # or ~/.agents/scripts/… after first deploy
 ```
 
 ## Usage in Cursor
@@ -66,7 +66,7 @@ GOVERNOR is on-demand (same as Claude — cloud cron cannot reach local BSELA).
 ## Maintenance
 
 ```bash
-~/.agents/scripts/integrate-cursor-from-claude.sh   # after Claude changes
+~/.agents/scripts/integrate-cursor-from-claude.sh   # synced from this repo on deploy
 ~/.claude/skills/scripts/sync-skills.sh             # if skills tree moved
 ~/.agents/scripts/sync-check.sh                     # drift check
 cursor-project-bootstrap <repo>                     # per-project AGENTS.md + overrides
