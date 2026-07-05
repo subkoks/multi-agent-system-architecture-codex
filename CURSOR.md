@@ -23,6 +23,7 @@ Author here first, then sync live editors:
 ```bash
 cd ~/Projects/multi-agent-system-architecture-claude-cli
 scripts/deploy-to-claude-and-cursor.sh          # deploy + integrate
+scripts/smoke-test.sh                           # verify integration health
 # scripts/deploy-to-claude-and-cursor.sh --dry-run  # preview only
 ~/.agents/scripts/sync-check.sh
 # Restart Cursor (MCP + hooks)
