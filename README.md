@@ -2,7 +2,7 @@
 
 Lean, native-first multi-agent + loop architecture for the BLACK.TERMINAL Claude Code setup.
 
-**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md).
+**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md). ✅ Phase D operational hardening (2026-07-05): smoke test + OpenCode→BSELA hook.
 
 ## What this is
 

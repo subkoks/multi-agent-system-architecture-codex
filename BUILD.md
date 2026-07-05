@@ -101,6 +101,29 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ---
 
+## Phase D — Operational hardening (optional, ½ day)
+
+### D1. Post-deploy smoke test ✅ (2026-07-05)
+- **`scripts/smoke-test.sh`:** repo↔Claude drift, Cursor agent descriptions, MCP parity, NEXUS rule, sync-check.
+- **Acceptance:** exits 0 after deploy; fails loudly on drift.
+
+### D2. OpenCode → BSELA session ingestion ✅ (2026-07-05)
+- **Scope:** `bsela hook opencode-stop` exports OpenCode SQLite → JSONL → ingest; guarded call in `~/.config/opencode/blackterminal-plugin.ts` on `session.idle`.
+- **Branch:** `feat/opencode-stop-hook` in BSELA repo.
+- **Acceptance:** OpenCode session idle → one row in BSELA (`source=opencode`); dedup on unchanged export hash.
+
+### D3. Pending lesson triage ✅ (2026-07-05)
+- **Scope:** Review 4 pending BSELA lessons (npm-before-tsc, path naming, placeholder syntax, large-file diff chunking). Approve/reject/externalize.
+- **Acceptance:** `bsela_lessons status=pending` → 0 or documented carry-over with owner sign-off.
+- **Result:** All 4 rejected — hyphens rule contradicted stack conventions; others redundant/vague vs AGENTS.md + closed-loop.
+
+### Phase D deploy (after review)
+- [x] `scripts/smoke-test.sh` authored (2026-07-05).
+- [x] D2 OpenCode hook implemented in BSELA (`feat/opencode-stop-hook`); plugin wired.
+- [x] D3 lesson triage complete — 0 pending.
+
+---
+
 ## Guardrails (apply to all phases)
 - Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.
