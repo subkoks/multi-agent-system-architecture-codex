@@ -22,9 +22,11 @@ jobs:
           test -f skills/orchestrate/SKILL.md
           test -f skills/closed-loop/SKILL.md
           test -x scripts/deploy-to-claude-and-cursor.sh
+          test -x scripts/integrate-cursor-from-claude.sh
           test -x scripts/smoke-test.sh
 
       - name: Shell syntax
         run: |
           bash -n scripts/deploy-to-claude-and-cursor.sh
+          bash -n scripts/integrate-cursor-from-claude.sh
           bash -n scripts/smoke-test.sh

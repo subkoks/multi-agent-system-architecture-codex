@@ -11,7 +11,10 @@ set -euo pipefail
 DRY_RUN=0
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 CLAUDE="${HOME}/.claude"
-INTEGRATE="${HOME}/.agents/scripts/integrate-cursor-from-claude.sh"
+INTEGRATE="${REPO}/scripts/integrate-cursor-from-claude.sh"
+if [[ ! -x "$INTEGRATE" ]]; then
+  INTEGRATE="${HOME}/.agents/scripts/integrate-cursor-from-claude.sh"
+fi
 
 log() { printf '%s\n' "$*"; }
 run() {
@@ -57,6 +60,17 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   run "$INTEGRATE" --dry-run
 else
   run "$INTEGRATE"
+fi
+
+if [[ -x "${REPO}/scripts/integrate-cursor-from-claude.sh" ]]; then
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "[dry-run] sync integrate script -> ~/.agents/scripts/"
+  else
+    run mkdir -p "${HOME}/.agents/scripts"
+    run cp "${REPO}/scripts/integrate-cursor-from-claude.sh" "${HOME}/.agents/scripts/integrate-cursor-from-claude.sh"
+    run chmod +x "${HOME}/.agents/scripts/integrate-cursor-from-claude.sh"
+    log "[ OK ] synced integrate-cursor-from-claude.sh -> ~/.agents/scripts/"
+  fi
 fi
 
 # Repo-owned security skills must stay Cursor-canonical (avoid cursor<->claude loops).
