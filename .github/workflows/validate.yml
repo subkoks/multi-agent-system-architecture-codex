@@ -1,0 +1,30 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Required paths exist
+        run: |
+          test -f agents/planner.md
+          test -f agents/governor.md
+          test -f agents/builder.md
+          test -f skills/orchestrate/SKILL.md
+          test -f skills/closed-loop/SKILL.md
+          test -x scripts/deploy-to-claude-and-cursor.sh
+          test -x scripts/smoke-test.sh
+
+      - name: Shell syntax
+        run: |
+          bash -n scripts/deploy-to-claude-and-cursor.sh
+          bash -n scripts/smoke-test.sh
