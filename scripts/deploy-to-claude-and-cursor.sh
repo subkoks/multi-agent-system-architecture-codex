@@ -59,5 +59,18 @@ else
   run "$INTEGRATE"
 fi
 
+# Repo-owned security skills must stay Cursor-canonical (avoid cursor<->claude loops).
+for repo_install in \
+  "${HOME}/Projects/blackterminal-security/install.sh" \
+  "${HOME}/Projects/prompt-injection-security/install.sh"; do
+  if [[ -x "$repo_install" ]]; then
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      log "[dry-run] $repo_install"
+    else
+      "$repo_install"
+    fi
+  fi
+done
+
 log ""
 log "[DONE] Deploy complete. Restart Cursor if MCP or hooks changed."
