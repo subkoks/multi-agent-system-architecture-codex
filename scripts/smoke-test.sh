@@ -79,9 +79,9 @@ for name in ("memory", "bsela"):
         raise SystemExit(1)
 PY
 then
-  pass "~/.cursor/mcp.json has memory + bsela"
+  pass "${HOME}/.cursor/mcp.json has memory + bsela"
 else
-  fail "~/.cursor/mcp.json missing memory or bsela (re-run integrate)"
+  fail "${HOME}/.cursor/mcp.json missing memory or bsela (re-run integrate)"
 fi
 
 # --- NEXUS rule ---
