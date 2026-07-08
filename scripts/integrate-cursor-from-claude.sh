@@ -26,7 +26,8 @@ run() {
 backup_if_exists() {
   local target="$1"
   if [[ -f "$target" ]]; then
-    local backup="${target}.bak.$(date +%Y%m%d%H%M%S)"
+    local backup
+    backup="${target}.bak.$(date +%Y%m%d%H%M%S)"
     if [[ "$DRY_RUN" -eq 1 ]]; then
       log "[dry-run] backup $target -> $backup"
     else
