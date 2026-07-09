@@ -434,15 +434,31 @@ printf '[%s] %s\n' "$ts" "$input" >> "${HOME}/.cursor/ai-tracking/mcp.log" 2>/de
 exit 0
 EOF
 
-if [[ -f "${CLAUDE}/hooks/filter-test-output.sh" ]]; then
-  if [[ "$DRY_RUN" -eq 1 ]]; then
-    log "[dry-run] copy filter-test-output.sh"
-  else
-    run cp "${CLAUDE}/hooks/filter-test-output.sh" "${CURSOR}/hooks/filter-test-output.sh"
-    run chmod +x "${CURSOR}/hooks/filter-test-output.sh"
-    log "[ OK ] ${CURSOR}/hooks/filter-test-output.sh"
-  fi
+write_hook "${CURSOR}/hooks/filter-test-output.sh" <<'EOF'
+#!/usr/bin/env bash
+# preToolUse(Shell) hook for Cursor: shrink verbose test/build output to failures
+# plus a short tail while preserving the real exit code.
+set -euo pipefail
+
+input=$(cat)
+cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // .command // ""')
+
+[[ -z "$cmd" ]] && exit 0
+
+if ! printf '%s' "$cmd" | grep -qE '^(npm (test|run test)|pnpm( run)? test|yarn test|npx vitest|vitest|jest|pytest|python -m pytest|go test|cargo (test|build)|tsc|ruff check)( |$)'; then
+  exit 0
 fi
+
+if printf '%s' "$cmd" | grep -qE '[|><]|&&|;'; then
+  exit 0
+fi
+
+wrapped="t=\$(mktemp); { ${cmd} ; } >\"\$t\" 2>&1; ec=\$?; \
+grep -inE -A3 '(fail|error|assert|panic|traceback|exception|FAILED|✗|✖|×)' \"\$t\" | head -200; \
+echo '--- last 8 lines ---'; tail -8 \"\$t\"; rm -f \"\$t\"; exit \$ec"
+
+jq -nc --arg c "$wrapped" '{permission:"allow",updated_input:{command:$c}}'
+EOF
 
 hooks_json="${CURSOR}/hooks.json"
 if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -459,12 +475,14 @@ else
     "beforeSubmitPrompt": [
       { "command": "./hooks/redact-prompt-secrets.sh" }
     ],
-    "beforeShellExecution": [
-      { "command": "./hooks/block-destructive-shell.sh" },
+    "preToolUse": [
       {
         "command": "./hooks/filter-test-output.sh",
-        "matcher": "npm test|pnpm test|yarn test|vitest|jest|pytest|go test|cargo test|cargo build|tsc|ruff check"
+        "matcher": "Shell"
       }
+    ],
+    "beforeShellExecution": [
+      { "command": "./hooks/block-destructive-shell.sh" }
     ],
     "afterFileEdit": [
       { "command": "./hooks/format-after-edit.sh" }
