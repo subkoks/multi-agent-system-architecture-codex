@@ -38,7 +38,7 @@ for agent in planner governor builder; do
   fi
 done
 
-for skill in orchestrate closed-loop; do
+for skill in orchestrate closed-loop loop; do
   if [[ -d "${REPO}/skills/${skill}" ]] && diff -qr "${REPO}/skills/${skill}" "${CLAUDE}/skills/${skill}" >/dev/null 2>&1; then
     pass "skills/${skill}/ matches ~/.claude"
   else
