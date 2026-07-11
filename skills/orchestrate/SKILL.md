@@ -42,7 +42,8 @@ Rule: no loop without an eval gate or a hard turn/budget cap. Unbounded = slop.
 bsela_route(task: "<subtask description>")
 → returns: { role: planner|builder|reviewer|judge|researcher|auditor|debugger|... , model: "..." }
 
-Role → model mapping:
+Role → model mapping (2026-07 tier map):
+  main interactive loop      →  claude-fable-5    (NEXUS / long-horizon; not a subagent)
   planner / judge / auditor  →  claude-opus-4-8   (hard reasoning)
   builder / debugger         →  claude-sonnet-5    (standard implementation)
   researcher / distiller     →  claude-sonnet-5    (standard)

@@ -124,6 +124,62 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ---
 
+## Phase E — Next-level upgrades (2026-07-09 audit)
+
+**Trigger:** post Phase D + loop skill integration; system CLEAN (BSELA alerts `[]`, smoke green, CI green). Goal: tighten drift surfaces, multi-harness notes, CI depth — **without** a parallel framework.
+
+### E0. Hygiene (this PR) ✅ authored 2026-07-09
+- [x] Align `agents/builder.md` model pin to `claude-sonnet-5` (matches `orchestrate` + live peers; drop stale `claude-sonnet-4-6`).
+- [x] Align `reference/review-workflow.example.js` model IDs to current tier map.
+- [x] CI: require `skills/loop/SKILL.md`; agent frontmatter + builder model pin; shellcheck on scripts.
+- [x] Docs: README layout (loop + scripts + CI); research-notes snapshot (Fable 5 + current BSELA counts); CLAUDE.md resume; `reference/harness-map.md`.
+- [x] `minimumVersion` proposal only (live CC is 2.1.205; settings floor still 2.1.183) — **do not** edit `~/.claude/settings.json` from this repo; surface in UPGRADE-PROPOSALS.
+
+**Verify:** `bash -n scripts/*.sh`; `scripts/smoke-test.sh`; CI validate green after PR.
+
+### E1. Model-tier consistency ✅ authored 2026-07-09
+- [x] Audit repo-owned agent model IDs: planner/governor `claude-opus-4-8`, builder `claude-sonnet-5`.
+- [x] Live `~/.claude/agents/*` drift (bare `sonnet`, auditors on sonnet-4-6) left as **UPGRADE-PROPOSALS** only.
+- [x] `skills/orchestrate` role table includes Fable main-loop row + current implementer pins.
+
+**Verify:** `rg '^model:' agents/` clean; `scripts/eval-skill-smoke.sh`.
+
+### E2. CI + GitHub hygiene ✅ authored 2026-07-09
+- [x] Expand validate workflow: shellcheck, frontmatter, loop skill, skill contracts, SECURITY.md / harness-map.
+- [x] Repo topics set via GitHub API.
+- [x] Free-private protection gap documented (no fake branch protection).
+- [x] Issue template `upgrade-proposal.md` + `SECURITY.md`.
+
+**Verify:** CI validate green on PR; topics non-empty.
+
+### E3. Multi-harness parity notes ✅ authored 2026-07-09
+- [x] `reference/harness-map.md` + README section (Claude · Cursor · Codex · Grok).
+- Zero new agents.
+
+### E4. Governor local cadence ✅ docs 2026-07-09
+- [x] Checklist in `CURSOR.md` + README (on-demand habit; no LaunchAgent auto-apply).
+- Cloud `/schedule` remains descoped.
+
+### E5. Eval harness for skills ✅ authored 2026-07-09
+- [x] `scripts/eval-skill-smoke.sh` — contract greps for orchestrate/closed-loop/loop + agent model pins.
+- [x] Wired into CI validate.
+
+**Verify:** `scripts/eval-skill-smoke.sh` exits 0.
+
+### Phase E deploy (after review)
+- [ ] Merge PR → `scripts/deploy-to-claude-and-cursor.sh` (builder + orchestrate model map).
+- [ ] `scripts/smoke-test.sh` (expect green after deploy).
+- [ ] Owner applies `minimumVersion` floor bump in settings.json (Hard Stop — see UPGRADE-PROPOSALS).
+- [ ] Close issue #9 when deploy + owner floor decision done.
+
+### Explicitly NOT Phase E (anti-hype)
+- ❌ New orchestrator agent / NEXUS daemon
+- ❌ Per-project HANDOFF/PROGRESS file zoo
+- ❌ Cloud GOVERNOR cron without BSELA connector
+- ❌ Auto-merge bots or secret-scanning theater on free private without Pro
+
+---
+
 ## Guardrails (apply to all phases)
 - Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.

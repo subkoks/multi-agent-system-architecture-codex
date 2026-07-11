@@ -5,7 +5,7 @@ Captured so next session doesn't re-research. Source links at bottom.
 ## The agent loop (official)
 Cycle: receive prompt → evaluate/respond → execute tools → repeat (one "turn" = one round trip with tool calls) → return result when a turn has no tool calls.
 - Caps: `max_turns` (tool-use turns only), `max_budget_usd`. Hitting them → `error_max_turns` / `error_max_budget_usd`.
-- `effort`: low / medium / high / xhigh / max. xhigh recommended on Opus 4.7+/Fable 5. (Current default here: opus + xhigh.)
+- `effort`: low / medium / high / xhigh / max. xhigh recommended on Opus 4.7+/Fable 5. (Live default here as of 2026-07-09: **claude-fable-5** + **effort high**; scale with cc-profile for routine work.)
 - Permission modes: default / acceptEdits / plan / dontAsk / auto (TS) / bypassPermissions.
 - Context accumulates across turns; auto-compaction summarizes old history (`compact_boundary`). Persistent rules belong in CLAUDE.md (re-injected every request), not the first prompt.
 - Subagents = fresh context, own system prompt, scoped tools, own model; only their final summary returns to parent (context-saving).
@@ -48,9 +48,18 @@ Cycle: receive prompt → evaluate/respond → execute tools → repeat (one "tu
 - rshah515/claude-code-subagents (project-manager / tech-lead / incident-commander roles)
 - Orchestrators: tutti, amux, agent-orchestrator, claude-flow. Technique: "Ralph Wiggum" loop.
 
-## Existing setup snapshot (2026-06-21)
+## Existing setup snapshot
+
+### 2026-06-21 (initial)
 - BSELA: 976 sessions, 1,022 errors, 44 lessons, 61 replay records. Tools: bsela_audit, bsela_route, bsela_lessons, bsela_errors, bsela_status, bsela_sessions.
 - 12 subagents, 42 skills, hooks (format/log/Stop→BSELA/test-filter), Workflow on, opus+xhigh.
+
+### 2026-07-09 (Phase E audit)
+- BSELA: **1,198** sessions (67 quarantined), **1,497** errors, **45** lessons (0 pending/proposed), 61 replay records.
+- `bsela_audit` 30d: alerts `[]`, lesson drift 0.0, ADRs 11 OK, quarantine_rate ~13%.
+- Main model: `claude-fable-5` + `effortLevel: high`; `enableWorkflows: true`; `minimumVersion: "2.1.183"` (installed CC **2.1.205** — floor bump is a proposal only).
+- Architecture repo: Phases 1–4 + Cursor Phase C + Phase D + loop skill; smoke-test green.
+- GitHub: private free — branch protection/rulesets not available; squash + delete_branch_on_merge already on.
 
 ## Sources
 - https://code.claude.com/docs/en/agent-sdk/agent-loop
