@@ -12,7 +12,11 @@ CLAUDE="${HOME}/.claude"
 CURSOR="${HOME}/.cursor"
 FAIL=0
 
-log() { [[ "$QUIET" -eq 0 ]] && printf '%s\n' "$*" || true; }
+log() {
+  if [[ "$QUIET" -eq 0 ]]; then
+    printf '%s\n' "$*"
+  fi
+}
 pass() { log "[ OK ] $*"; }
 fail() { log "[FAIL] $*"; FAIL=1; }
 
