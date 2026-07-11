@@ -169,8 +169,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 ### Phase E deploy (after review)
 - [x] Merged #10 → `scripts/deploy-to-claude-and-cursor.sh` (2026-07-11; builder + orchestrate model map).
 - [x] `scripts/smoke-test.sh` green post-deploy.
-- [ ] Owner applies `minimumVersion` floor bump in settings.json (Hard Stop — see UPGRADE-PROPOSALS).
-- [x] Issue #9 closed (deploy done; floor bump remains owner-only).
+- [x] Owner applied `minimumVersion` floor bump in settings.json: `2.1.183` → `2.1.205` (2026-07-11; Hard Stop approved).
+- [x] Issue #9 closed; live agent model pins applied at source (2026-07-11).
 
 ### Explicitly NOT Phase E (anti-hype)
 - ❌ New orchestrator agent / NEXUS daemon
