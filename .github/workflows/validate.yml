@@ -21,12 +21,40 @@ jobs:
           test -f agents/builder.md
           test -f skills/orchestrate/SKILL.md
           test -f skills/closed-loop/SKILL.md
+          test -f skills/loop/SKILL.md
           test -x scripts/deploy-to-claude-and-cursor.sh
           test -x scripts/integrate-cursor-from-claude.sh
           test -x scripts/smoke-test.sh
+          test -x scripts/eval-skill-smoke.sh
+          test -f reference/harness-map.md
+          test -f SECURITY.md
+
+      - name: Agent frontmatter
+        run: |
+          for f in agents/planner.md agents/governor.md agents/builder.md; do
+            grep -q '^name:' "$f"
+            grep -q '^description:' "$f"
+            grep -q '^model:' "$f"
+          done
+          # Builder must track standard implementer tier (not stale sonnet-4-6)
+          grep -q 'model: claude-sonnet-5' agents/builder.md
+          ! grep -q 'claude-sonnet-4-6' agents/builder.md
 
       - name: Shell syntax
         run: |
           bash -n scripts/deploy-to-claude-and-cursor.sh
           bash -n scripts/integrate-cursor-from-claude.sh
           bash -n scripts/smoke-test.sh
+          bash -n scripts/eval-skill-smoke.sh
+
+      - name: Skill contracts
+        run: scripts/eval-skill-smoke.sh --quiet
+
+      - name: Shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+          shellcheck -x scripts/deploy-to-claude-and-cursor.sh \
+            scripts/integrate-cursor-from-claude.sh \
+            scripts/smoke-test.sh \
+            scripts/eval-skill-smoke.sh

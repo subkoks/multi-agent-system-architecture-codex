@@ -3,7 +3,7 @@ name: builder
 description: >
   Scoped implementer for worktree-isolated parallel file changes. Use when the orchestrator needs multiple independent changes executed in parallel — migrating N files, applying a refactor across a module set, or running a batch transform. Each builder instance takes a specific, bounded task (1-5 files), implements it, runs the local eval gate, and reports done or blocked. Do NOT use for planning, architecture decisions, or tasks touching >5 interdependent files (use the main session + planner instead). Do NOT use for single-file changes the main session can do inline.
 tools: Read, Edit, Write, Bash, Grep, Glob
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 effort: medium
 maxTurns: 30
 ---

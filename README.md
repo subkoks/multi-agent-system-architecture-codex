@@ -2,7 +2,7 @@
 
 Lean, native-first multi-agent + loop architecture for the BLACK.TERMINAL Claude Code setup.
 
-**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md). ✅ Phase D operational hardening (2026-07-05): smoke test + OpenCode→BSELA hook.
+**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md). ✅ Phase D operational hardening (2026-07-05): smoke test + OpenCode→BSELA hook. ✅ Loop skill in-repo (2026-07-09). 🔄 **Phase E** next-level upgrades — see `BUILD.md` § Phase E.
 
 ## What this is
 
@@ -25,11 +25,13 @@ multi-agent-system-architecture-claude-cli/
 ├── README.md      ← you are here
 ├── CURSOR.md      ← Cursor integration + deploy ritual
 ├── PLAN.md        ← the accepted architecture plan (source of truth)
-├── BUILD.md       ← phased resume map: exact files to create + acceptance criteria
+├── BUILD.md       ← phased resume map + Phase E upgrades
+├── AGENTS.md      ← repo guidance for Codex / multi-harness agents
 ├── agents/        ← planner.md, governor.md, builder.md
-├── skills/        ← orchestrate/SKILL.md, closed-loop/SKILL.md
-└── reference/
-    └── research-notes.md  ← loop/subagent facts + sources (no re-research needed)
+├── skills/        ← orchestrate/, closed-loop/, loop/
+├── scripts/       ← deploy, integrate-cursor, smoke-test
+├── reference/     ← research-notes, nexus-persona, review-workflow, harness-map
+└── .github/       ← validate workflow (paths, frontmatter, shellcheck)
 ```
 
 ## How to resume
@@ -38,7 +40,7 @@ multi-agent-system-architecture-claude-cli/
 ```
 cd ~/Projects/multi-agent-system-architecture-claude-cli
 claude
-> Read BUILD.md. All phases complete — run governor or extend with a new phase.
+> Read BUILD.md. Phases 1–4 + C + D complete. Execute Phase E or run governor.
 ```
 
 **Cursor:** see [CURSOR.md](./CURSOR.md).
@@ -58,3 +60,11 @@ codex
 ```
 
 The Claude Code docs remain the canonical architecture source for this repo. Codex uses the same repo instructions and workspace defaults, not a separate fork of the workflow.
+
+## Multi-harness
+
+Same architecture, multiple surfaces (Claude Code · Cursor · Codex · Grok): see [reference/harness-map.md](./reference/harness-map.md).
+
+## Governor cadence
+
+GOVERNOR stays **on-demand** (cloud cron cannot reach local BSELA). Habit: before big changes or after a Claude Code upgrade, run governor → review `UPGRADE-PROPOSALS.md` → apply only approved items → `scripts/smoke-test.sh` after deploy.

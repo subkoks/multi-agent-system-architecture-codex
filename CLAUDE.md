@@ -18,4 +18,4 @@ Builds a lean, native-first multi-agent + loop layer for the BLACK.TERMINAL Clau
 - Keep the roster small: add an agent only when it reduces friction more than it adds maintenance.
 
 ## Resume
-All BUILD.md phases complete. Run `governor` for periodic audits or extend with a new phase.
+BUILD.md Phases 1–4 + C + D complete. **Phase E** (next-level upgrades) is the active track — read `BUILD.md` § Phase E. Run `governor` for audits; deploy only after explicit review.

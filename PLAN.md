@@ -1,6 +1,6 @@
 # Claude Code Multi-Agent + Loop Architecture — Accepted Plan
 
-**Accepted:** 2026-06-21 · **Owner:** black.terminal · **Build:** next session, phased.
+**Accepted:** 2026-06-21 · **Owner:** black.terminal · **Build:** Phases 1–4 + C + D complete; **Phase E** (next-level) in `BUILD.md` (2026-07-09).
 
 ## Locked decisions
 

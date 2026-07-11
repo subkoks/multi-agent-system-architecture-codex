@@ -51,6 +51,15 @@ scripts/integrate-cursor-from-claude.sh   # or ~/.agents/scripts/… after first
 
 GOVERNOR is on-demand (same as Claude — cloud cron cannot reach local BSELA).
 
+### Governor cadence (local checklist)
+
+Before a big change, after a CC upgrade, or weekly:
+
+1. Task → `governor` ("run governor" / system audit)
+2. Read `UPGRADE-PROPOSALS.md` (gitignored in this repo) for new open items
+3. Apply only what you approve — never auto-apply governance
+4. `scripts/smoke-test.sh` after any deploy
+
 ## Layers
 
 | Layer | Location |
