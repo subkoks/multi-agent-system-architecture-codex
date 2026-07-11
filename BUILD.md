@@ -167,10 +167,10 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 **Verify:** `scripts/eval-skill-smoke.sh` exits 0.
 
 ### Phase E deploy (after review)
-- [ ] Merge PR → `scripts/deploy-to-claude-and-cursor.sh` (builder + orchestrate model map).
-- [ ] `scripts/smoke-test.sh` (expect green after deploy).
+- [x] Merged #10 → `scripts/deploy-to-claude-and-cursor.sh` (2026-07-11; builder + orchestrate model map).
+- [x] `scripts/smoke-test.sh` green post-deploy.
 - [ ] Owner applies `minimumVersion` floor bump in settings.json (Hard Stop — see UPGRADE-PROPOSALS).
-- [ ] Close issue #9 when deploy + owner floor decision done.
+- [x] Issue #9 closed (deploy done; floor bump remains owner-only).
 
 ### Explicitly NOT Phase E (anti-hype)
 - ❌ New orchestrator agent / NEXUS daemon
