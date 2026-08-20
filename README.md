@@ -68,3 +68,5 @@ Same architecture, multiple surfaces (Claude Code · Cursor · Codex · Grok): s
 ## Governor cadence
 
 GOVERNOR stays **on-demand** (cloud cron cannot reach local BSELA). Habit: before big changes or after a Claude Code upgrade, run governor → review `UPGRADE-PROPOSALS.md` → apply only approved items → `scripts/smoke-test.sh` after deploy.
+
+**Doc-watch (primary):** [Claude Code changelog](https://docs.claude.com/en/docs/claude-code/changelog) — prefer this over `claude.ai/changelog` (often Cloudflare-blocked). Optional: Anthropic news posts for features like dynamic workflows / auto mode.

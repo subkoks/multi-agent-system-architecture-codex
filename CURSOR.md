@@ -56,9 +56,12 @@ GOVERNOR is on-demand (same as Claude — cloud cron cannot reach local BSELA).
 Before a big change, after a CC upgrade, or weekly:
 
 1. Task → `governor` ("run governor" / system audit)
-2. Read `UPGRADE-PROPOSALS.md` (gitignored in this repo) for new open items
-3. Apply only what you approve — never auto-apply governance
-4. `scripts/smoke-test.sh` after any deploy
+2. Doc-watch: [Claude Code changelog](https://docs.claude.com/en/docs/claude-code/changelog) (primary; `claude.ai/changelog` often blocked)
+3. Read `UPGRADE-PROPOSALS.md` (gitignored in this repo) for new open items
+4. Apply only what you approve — never auto-apply governance
+5. `scripts/smoke-test.sh` after any deploy
+
+**Optional (Max/Team/Enterprise):** try Claude Code *dynamic workflows* for one large migration before inventing new agents — see Anthropic's Opus 4.8 / dynamic-workflows notes.
 
 ## Layers
 
