@@ -42,6 +42,45 @@ for agent in planner governor builder; do
   fi
 done
 
+# --- Live agent tools must stay Claude-shaped (catch VS Code/other harness overwrites) ---
+# Fail if tools: lists IDE extension IDs (vscode, sonarlint, java packs, etc.).
+if python3 - "${CLAUDE}/agents" <<'PY'
+import pathlib, re, sys
+agents_dir = pathlib.Path(sys.argv[1])
+# Non-Claude tool tokens seen in the 2026-08-20 builder overwrite incident.
+bad = re.compile(
+    r"(?i)\b(vscode|sonarlint|ms-python|vscjava|execute|'bsela/\*'|\"bsela/\*\")\b"
+)
+# Expected Claude Code tool names (subset — presence of any is a positive signal).
+claude_tools = re.compile(r"\b(Read|Edit|Write|Bash|Grep|Glob|WebFetch|WebSearch)\b")
+failed = []
+for path in sorted(agents_dir.glob("*.md")):
+    text = path.read_text(encoding="utf-8", errors="replace")
+    # Frontmatter only
+    if not text.startswith("---"):
+        continue
+    end = text.find("\n---", 3)
+    fm = text[3:end] if end != -1 else text[:800]
+    tools_m = re.search(r"(?m)^tools:\s*(.+?)(?=\n[a-zA-Z_]+:|\Z)", fm, re.DOTALL)
+    if not tools_m:
+        continue
+    tools = tools_m.group(1)
+    if bad.search(tools):
+        failed.append(f"{path.name}: non-Claude tools detected")
+        continue
+    # Repo-owned builders/planners should keep at least one classic Claude tool.
+    if path.name in {"builder.md", "planner.md", "governor.md"} and not claude_tools.search(tools):
+        failed.append(f"{path.name}: missing Claude tool names in tools:")
+if failed:
+    print("\n".join(failed))
+    raise SystemExit(1)
+PY
+then
+  pass "live agent tools: Claude-shaped"
+else
+  fail "live agent tools: harness overwrite detected (redeploy from repo)"
+fi
+
 for skill in orchestrate closed-loop loop; do
   if [[ -d "${REPO}/skills/${skill}" ]] && diff -qr "${REPO}/skills/${skill}" "${CLAUDE}/skills/${skill}" >/dev/null 2>&1; then
     pass "skills/${skill}/ matches ~/.claude"
