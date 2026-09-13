@@ -1,30 +1,22 @@
-# Harness map — same architecture, multiple surfaces
+# Harness map — Codex canonical
 
-This repo is the **authoring root** for the BLACK.TERMINAL multi-agent + loop layer. Claude Code remains the canonical runtime. Other harnesses **consume** the same ideas; they do not get a parallel agent tree.
+This repo is the **authoring root** for the BLACK.TERMINAL multi-agent + loop layer. Codex is the canonical runtime; other harnesses consume the same ideas and get no parallel agent tree.
 
-| Surface | Where it lives | Orchestrator | Fan-out | Loops | Deploy path |
-|---|---|---|---|---|---|
-| **Claude Code** (canonical) | `~/.claude/agents`, `~/.claude/skills` | NEXUS persona in CLAUDE.md | `Workflow` tool | `/loop`, `/schedule` (cloud) | `scripts/deploy-to-claude-and-cursor.sh` |
-| **Cursor** | `~/.cursor/agents`, skills symlink | `cursor-nexus.mdc` | Task parallel subagents | `/loop` / automate | integrate script (after deploy) |
-| **Codex CLI** | repo `AGENTS.md` + `.codex/agents/*.toml` + `.codex/config.toml` | session + AGENTS.md | subagent workflows (cap 3 threads) | `/loop` skill + monitor | no auto-deploy; read repo (`scripts/install-codex-local.sh` for personal install) |
-| **Grok Build** | `~/.agents/skills` (orchestrate, closed-loop, loop, …) | main session | subagents / Task | `/loop` skill + monitor | skill install; no separate agent zoo |
+| Surface | Status | Where it lives | Orchestrator | Fan-out | Loops | Deploy path |
+|---|---|---|---|---|---|---|
+| **Codex** (canonical) | active | repo `.codex/agents`, `.codex/config.toml`; `~/.codex/*` after install | main session + `AGENTS.md` | subagent workflows (cap 3 threads) | `$loop` skill + monitored shell | `scripts/install-codex-local.sh --apply` (approval) |
+| **Grok Build** | active (secondary) | `~/.agents/skills` (orchestrate, closed-loop, loop, …) | main session | subagents / Task | `$loop` skill + monitor | skill install; no separate agent zoo |
+| Claude Code | retired 2026-09-13 | git history + `BUILD.md` Phases 1–E | — | — | — | removed |
+| Cursor | retired 2026-09-13 | git history + `BUILD.md` Phase C | — | — | — | removed |
 
-## Shared rules (all harnesses)
+## Shared rules (all active harnesses)
 
 - Native-first: main session orchestrates; specialists are narrow.
 - Closed build work → eval gate (tests + review + types + lint).
 - No unbounded loops without a turn/budget cap.
-- Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) are Hard Stop — propose only.
+- Governance files (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors) are Hard Stop — propose only.
 - Author in this repo → review → deploy. Never silent overwrite of live config.
-
-## What does **not** map 1:1
-
-| Claude Code | Other harnesses |
-|---|---|
-| `Workflow` JS pipelines | Cursor/Grok: parallel Task/subagents with explicit gates |
-| Cloud `/schedule` | Session `/loop` interval, LaunchAgent checklist, or manual governor |
-| BSELA Stop hook capture | OpenCode has a dedicated hook; other harnesses may lag — do not invent fake capture |
 
 ## When to add a harness-specific file
 
-Only when a primitive is genuinely different (e.g. CURSOR.md). Prefer one paragraph in this map over a new skill fork.
+Only when a primitive is genuinely different. Prefer one paragraph in this map over a new skill fork.

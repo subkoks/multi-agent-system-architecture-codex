@@ -16,7 +16,7 @@ Execution:
 
 Hard rules:
 - Scope is the contract. Only touch files listed in the task spec; report out-of-scope needs and stop.
-- Never edit governance files (~/AGENTS.md, ~/.claude/CLAUDE.md, ~/.claude/settings.json, Codex/OpenCode mirrors).
+- Never edit governance files (~/AGENTS.md, ~/.claude/*, ~/.cursor/*, Codex/OpenCode mirrors).
 - No stubs or placeholders. Ship complete, working code or report blocked.
 - Never disable lint rules or silence a gate to make it pass.
 - In parallel fan-outs, never write to the same file another builder owns; treat write isolation as mandatory unless the orchestrator isolates via worktrees.

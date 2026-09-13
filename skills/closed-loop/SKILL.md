@@ -13,7 +13,7 @@ One reusable definition of "done." Every closed loop calls this gate. No eval = 
 | Gate | What passes |
 |---|---|
 | **Tests** | Test suite exits 0 with no skipped-due-to-error |
-| **Reviewer** | `code-reviewer` subagent (Claude) / `reviewer` agent (Codex) finds no Critical or Major findings |
+| **Reviewer** | `reviewer` agent (Codex) finds no Critical or Major findings |
 | **Type-check** | Type checker exits 0 |
 | **Lint** | Linter exits 0 (warnings allowed; errors not) |
 
@@ -79,10 +79,10 @@ iteration = 1
 while iteration <= MAX_ITERATIONS:
     1. IMPLEMENT — make or continue the change (inline or via subagent)
     2. GATE — run all applicable commands above; capture output
-    3. REVIEW — spawn code-reviewer subagent on the current diff
+    3. REVIEW — spawn the `reviewer` agent on the current diff
     4. EVALUATE:
        - all gate commands exit 0?  →  Yes
-       - code-reviewer has no Critical/Major?  →  Yes
+       - reviewer has no Critical/Major?  →  Yes
        If ALL Yes → SHIP (report [DONE])
        Else → diagnose failure, loop back to IMPLEMENT (iteration += 1)
 
@@ -107,20 +107,20 @@ Before looping back, read the failure output completely:
 - **Never** report `[DONE]` with a red gate.
 - **Never** silence the gate to make it pass (disable rules, skip tests, `--force`).
 - **Never** run more than MAX_ITERATIONS without stopping and reporting [BLOCKED].
-- Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) are off-limits even inside a build loop.
+- Governance files (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors) are off-limits even inside a build loop.
 - Real-money flows (Solana transactions, payment APIs) require `solana-reviewer` or `security-auditor` pass before the gate is considered green — add as a 5th gate leg when the change touches these.
 
 ## Invocation examples
 
 ```
 /closed-loop "add JWT middleware to the Express auth routes"
-→ detect TS repo → implement JWT middleware → run vitest+tsc+eslint → code-reviewer → ship or loop
+→ detect TS repo → implement JWT middleware → run vitest+tsc+eslint → reviewer → ship or loop
 
 /closed-loop "fix the pytest failures in tests/test_swap.py"
-→ detect Python → implement fix → run pytest+ruff → code-reviewer → ship or loop
+→ detect Python → implement fix → run pytest+ruff → reviewer → ship or loop
 
 /closed-loop "refactor Anchor program to use new account constraints"
-→ detect Rust → implement → run cargo test+clippy → code-reviewer + solana-reviewer → ship or loop
+→ detect Rust → implement → run cargo test+clippy → reviewer + solana-reviewer → ship or loop
 ```
 
 ## Gate output format (report after each iteration)

@@ -196,6 +196,19 @@ Deploy note: the F2 skill edits drift vs `~/.claude` until `scripts/deploy-to-cl
 
 ---
 
+## Phase G — Codex canonical + Claude/Cursor retirement (2026-09-13, `feat/codex-native-rebuild`)
+
+**Trigger:** owner stopped using Claude Code and Cursor; Codex (CLI + IDE extension + desktop) is the primary surface. Repo renamed `multi-agent-system-architecture-codex`.
+
+- [x] G1. **Docs pivoted to Codex** — README, AGENTS.md, CODEX.md, and the harness map rewritten Codex-first; PLAN.md retitled with a supersede note; Phase F kept.
+- [x] G2. **Claude/Cursor surfaces removed** — `agents/*.md`, `CLAUDE.md`, `CURSOR.md`, `.claude/settings.json`, `.cursor/rules/*`, `scripts/deploy-to-claude-and-cursor.sh`, `scripts/integrate-cursor-from-claude.sh`, `scripts/smoke-test.sh`, `reference/{nexus-persona,research-notes,review-workflow.example.js}`. Git history preserves them.
+- [x] G3. **Skills rewritten Codex-first** — `$orchestrate` rewritten (Codex delegation rules, no Claude model tiers), `$closed-loop` reviewer leg now the Codex `reviewer` agent; eval contracts and CI updated to match.
+- [x] G4. **Single installer** — `scripts/install-codex-local.sh` is the only deploy path; `scripts/smoke-test-codex.sh` the only smoke suite; CI asserts legacy surfaces are absent.
+
+**Verify:** `scripts/eval-skill-smoke.sh --quiet`, `scripts/smoke-test-codex.sh --repo --quiet`, `scripts/install-codex-local.sh` (dry-run), `git diff --check`, CI validate green.
+
+---
+
 ## Guardrails (apply to all phases)
 - Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.

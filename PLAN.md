@@ -1,6 +1,8 @@
-# Claude Code Multi-Agent + Loop Architecture — Accepted Plan
+# Multi-Agent + Loop Architecture — Accepted Plan
 
 **Accepted:** 2026-06-21 · **Owner:** black.terminal · **Build:** Phases 1–4 + C + D complete; **Phase E** (next-level) in `BUILD.md` (2026-07-09).
+
+> **Superseded note (2026-09-13):** Codex is now the canonical runtime and the repo is renamed `multi-agent-system-architecture-codex`. Claude Code and Cursor are retired; the Claude-era content below is kept as design history.
 
 ## Locked decisions
 
@@ -161,7 +163,8 @@ Each phase independently shippable and reversible. Detailed file specs + accepta
 **Decision:** add thin Codex adapters plus a narrow reversible installer; do not build a universal plugin.
 
 Locked:
-- `agents/*.md` stays the canonical authoring source; `.codex/agents/*.toml` are adapters, not forks.
+- Claude Code and Cursor retired; repo renamed `multi-agent-system-architecture-codex`. Claude-era files removed from the working tree and kept in git history.
+- `.codex/agents/*.toml` is the canonical agent source.
 - Adapters inherit the parent model; no role-specific model pins.
 - `planner` and `reviewer` run `sandbox_mode = "read-only"`; `governor` writes only `UPGRADE-PROPOSALS.md`.
 - `agents.max_concurrent_threads_per_session = 3` in `.codex/config.toml`.

@@ -2,17 +2,17 @@
 
 How this repo maps into Codex CLI, the IDE extension, and the ChatGPT desktop app.
 
-**Status:** Codex-native rebuild (`feat/codex-native-rebuild`). Claude Code remains the canonical runtime; this document covers the Codex consumption surfaces only.
+**Status:** Codex-native rebuild (`feat/codex-native-rebuild`). Codex is the canonical runtime. Claude Code and Cursor were retired on 2026-09-13; their files live only in git history and `BUILD.md` Phases 1–E.
 
 ## Canonical files vs adapters
 
 | Asset | Canonical source | Codex surface |
 |---|---|---|
-| Agents | `agents/*.md` (Claude authoring source) | `.codex/agents/*.toml` (adapters: planner, governor, builder, reviewer) |
+| Agents | `.codex/agents/*.toml` (canonical: planner, governor, builder, reviewer) | installed copies in `~/.codex/agents/` |
 | Skills | `skills/*/SKILL.md` | `.agents/skills/*` discovery symlinks (orchestrate, closed-loop, loop) |
 | Policy | `AGENTS.md` | `.codex/config.toml` (sandbox, approvals, thread cap) |
 
-The `.codex/agents/*.toml` files are concise adapters, not forks: change the canonical `agents/*.md` first, then update the matching adapter.
+Edit the TOML agents directly — they are the source of truth now.
 
 ## Agents
 
@@ -36,7 +36,7 @@ Repo-root `.agents/skills/*` symlinks make the three workflow skills discoverabl
 ## Usage
 
 ```bash
-cd ~/Projects/multi-agent-system-architecture-claude-cli
+cd ~/Projects/multi-agent-system-architecture-codex
 codex
 > spawn planner to plan …          # custom agents via .codex/agents/*.toml
 > use reviewer to gate the diff    # closed-loop review leg
@@ -58,5 +58,5 @@ The installer copies the four agents to `~/.codex/agents/` and repoints the thre
 ## Drift and rollback
 
 - Codex adapters can drift from the canonical agents; CI contract greps guard the key rules.
-- After editing `skills/*`, the live Claude/Cursor copies drift until the normal deploy ritual (`scripts/deploy-to-claude-and-cursor.sh`) runs. That deploy is outside the Codex rebuild scope — run it when you next resync Claude/Cursor.
-- Rollback: restore from the installer manifest, remove only a newly installed Cursor extension, and revert the feature branch. Desktop app, VS Code extension, CLI profiles, and global config are never touched.
+- Claude/Cursor are retired — there is nothing to resync, and no legacy deploy script remains.
+- Rollback: restore from the installer manifest and revert the feature branch. Desktop app, VS Code extension, CLI profiles, and global config are never touched.

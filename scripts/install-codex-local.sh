@@ -14,7 +14,7 @@
 #   - Existing regular agent files are backed up before replacement.
 #   - Unknown collisions (unexpected files/dirs) abort the run.
 #   - Never deletes recursively, never curl|sh, never touches hooks/MCP/auth,
-#     and never invokes the Claude/Cursor deploy scripts.
+#     and never invokes legacy deploy scripts.
 #
 # Usage:
 #   scripts/install-codex-local.sh                    # dry-run (default)

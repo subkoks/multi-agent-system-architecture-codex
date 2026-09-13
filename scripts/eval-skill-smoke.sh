@@ -57,13 +57,11 @@ require_file "skills/loop/SKILL.md"
 require_grep "skills/orchestrate/SKILL.md" 'Depth cap' "orchestrate: depth cap"
 require_grep "skills/orchestrate/SKILL.md" 'bsela_route' "orchestrate: bsela_route"
 require_grep "skills/orchestrate/SKILL.md" 'Hard Stops|Hard Stop' "orchestrate: Hard Stops"
-require_grep "skills/orchestrate/SKILL.md" 'claude-fable-5' "orchestrate: fable main loop"
-require_grep "skills/orchestrate/SKILL.md" 'claude-sonnet-5' "orchestrate: sonnet implementers"
 require_grep "skills/orchestrate/SKILL.md" 'Eval gate' "orchestrate: eval gate"
 
 # closed-loop contracts
 require_grep "skills/closed-loop/SKILL.md" 'MAX_ITERATIONS' "closed-loop: MAX_ITERATIONS"
-require_grep "skills/closed-loop/SKILL.md" 'code-reviewer' "closed-loop: code-reviewer"
+require_grep "skills/closed-loop/SKILL.md" 'reviewer' "closed-loop: reviewer leg"
 require_grep "skills/closed-loop/SKILL.md" 'Never.*report.*DONE|Never reports' "closed-loop: never claim done on red gate"
 require_grep "skills/closed-loop/SKILL.md" 'governance|AGENTS.md' "closed-loop: governance off-limits"
 
@@ -72,16 +70,11 @@ require_grep "skills/loop/SKILL.md" 'dynamic' "loop: dynamic mode"
 require_grep "skills/loop/SKILL.md" 'AGENT_LOOP' "loop: sentinel pattern"
 
 # Codex-native contracts (Codex rebuild)
-require_grep "skills/orchestrate/SKILL.md" 'Codex notes' "orchestrate: Codex routing"
+require_grep "skills/orchestrate/SKILL.md" 'Codex delegation rules' "orchestrate: Codex delegation"
 require_grep "skills/orchestrate/SKILL.md" 'Write isolation' "orchestrate: Codex write isolation"
 require_grep "skills/closed-loop/SKILL.md" 'agent \(Codex\)' "closed-loop: Codex reviewer leg"
 require_grep "skills/closed-loop/SKILL.md" 'npx --yes' "closed-loop: no npx --yes"
 require_grep "skills/loop/SKILL.md" 'Expiry and stop conditions' "loop: expiry/stop rule"
-
-# agent model pins (repo-owned)
-require_grep "agents/builder.md" '^model: claude-sonnet-5' "builder model pin"
-require_grep "agents/planner.md" '^model: claude-opus-4-8' "planner model pin"
-require_grep "agents/governor.md" '^model: claude-opus-4-8' "governor model pin"
 
 log ""
 if [[ "$FAIL" -eq 0 ]]; then

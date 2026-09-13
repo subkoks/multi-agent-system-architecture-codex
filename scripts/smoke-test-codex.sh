@@ -72,12 +72,24 @@ for skill in orchestrate closed-loop loop; do
   fi
 done
 
+# --- Claude/Cursor retirement: legacy surfaces must be gone ---
+for legacy in CLAUDE.md CURSOR.md \
+  agents/planner.md agents/governor.md agents/builder.md \
+  scripts/deploy-to-claude-and-cursor.sh scripts/integrate-cursor-from-claude.sh scripts/smoke-test.sh \
+  .claude/settings.json .cursor/rules/project-overrides.mdc; do
+  if [[ -e "${REPO}/${legacy}" ]]; then
+    fail "legacy Claude/Cursor surface still present: ${legacy}"
+  else
+    pass "legacy surface removed: ${legacy}"
+  fi
+done
+
 # --- Codex workflow contracts ---
 require_grep() {
   local path="$1" pattern="$2" label="$3"
   if grep -qE "$pattern" "${REPO}/${path}"; then pass "$label"; else fail "$label"; fi
 }
-require_grep "skills/orchestrate/SKILL.md" 'Codex notes' "orchestrate: Codex routing"
+require_grep "skills/orchestrate/SKILL.md" 'Codex delegation rules' "orchestrate: Codex routing"
 require_grep "skills/orchestrate/SKILL.md" 'Write isolation' "orchestrate: write isolation"
 require_grep "skills/closed-loop/SKILL.md" 'agent \(Codex\)' "closed-loop: Codex reviewer leg"
 require_grep "skills/closed-loop/SKILL.md" 'npx --yes' "closed-loop: no npx --yes"

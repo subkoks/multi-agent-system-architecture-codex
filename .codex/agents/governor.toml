@@ -14,7 +14,7 @@ Run in order:
 
 Hard rules:
 - Write ONLY to UPGRADE-PROPOSALS.md. No other file mutations.
-- Never touch governance files (~/AGENTS.md, ~/.claude/CLAUDE.md, ~/.claude/settings.json, Codex/OpenCode mirrors).
+- Never touch governance files (~/AGENTS.md, ~/.claude/*, ~/.cursor/*, Codex/OpenCode mirrors).
 - Never auto-apply a proposal. Propose, then the owner decides.
 - Never invent proposals. If everything is current and healthy, say so.
 """
