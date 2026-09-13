@@ -6,7 +6,7 @@ This repo is the **authoring root** for the BLACK.TERMINAL multi-agent + loop la
 |---|---|---|---|---|---|
 | **Claude Code** (canonical) | `~/.claude/agents`, `~/.claude/skills` | NEXUS persona in CLAUDE.md | `Workflow` tool | `/loop`, `/schedule` (cloud) | `scripts/deploy-to-claude-and-cursor.sh` |
 | **Cursor** | `~/.cursor/agents`, skills symlink | `cursor-nexus.mdc` | Task parallel subagents | `/loop` / automate | integrate script (after deploy) |
-| **Codex CLI** | repo `AGENTS.md` + `.codex/config.toml` | session + AGENTS.md | agent tools per Codex | session discipline | no auto-deploy; read repo |
+| **Codex CLI** | repo `AGENTS.md` + `.codex/agents/*.toml` + `.codex/config.toml` | session + AGENTS.md | subagent workflows (cap 3 threads) | `/loop` skill + monitor | no auto-deploy; read repo (`scripts/install-codex-local.sh` for personal install) |
 | **Grok Build** | `~/.agents/skills` (orchestrate, closed-loop, loop, …) | main session | subagents / Task | `/loop` skill + monitor | skill install; no separate agent zoo |
 
 ## Shared rules (all harnesses)

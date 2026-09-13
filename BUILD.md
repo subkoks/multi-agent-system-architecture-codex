@@ -180,6 +180,22 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ---
 
+## Phase F — Codex-native rebuild (2026-09-13, `feat/codex-native-rebuild`)
+
+**Trigger:** Codex CLI (0.154.0), the IDE extension, and the desktop app are now first-class consumers of this repo. Goal: native Codex discovery plus a reversible local installer — without replacing the Claude/Cursor architecture. Details: `CODEX.md`.
+
+- [x] F1. **Codex-native discovery** — `.codex/agents/{planner,governor,builder,reviewer}.toml` adapters; `.agents/skills/{orchestrate,closed-loop,loop}` symlinks into `skills/`; `agents.max_concurrent_threads_per_session = 3` in `.codex/config.toml`; narrow `.gitignore` exceptions for `.codex/agents/*.toml`.
+- [x] F2. **Codex-aware workflows** — Codex routing + write-isolation notes in `/orchestrate`; `reviewer` adapter leg, repo-first gate commands, no `npx --yes` in `/closed-loop`; expiry/stop rule in `/loop`; delegation + thread-cap rules in `AGENTS.md`.
+- [x] F3. **Installer + validation** — `scripts/install-codex-local.sh` (dry-run default, managed allowlist, backups, rollback manifest), `scripts/smoke-test-codex.sh` (`--repo`/`--live`), CI TOML/symlink/schema checks + installer dry-run, `SECURITY.md` notes. Apply/rollback proven against a fake `HOME`.
+- [x] F4. **Docs** — `CODEX.md`; README, PLAN, CLAUDE, CURSOR, harness-map reconciled.
+- [ ] F5. **Local install (APPROVAL)** — `install-codex-local.sh --apply`, Cursor extension install, desktop app open. Phase 5 of the rebuild plan; not executed by default.
+
+Deploy note: the F2 skill edits drift vs `~/.claude` until `scripts/deploy-to-claude-and-cursor.sh` next runs (that deploy is outside rebuild scope).
+
+**Verify:** `scripts/eval-skill-smoke.sh`, `scripts/smoke-test-codex.sh --repo`, `scripts/install-codex-local.sh` (dry-run), `git diff --check`, CI validate green.
+
+---
+
 ## Guardrails (apply to all phases)
 - Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.

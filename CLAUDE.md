@@ -19,3 +19,7 @@ Builds a lean, native-first multi-agent + loop layer for the BLACK.TERMINAL Clau
 
 ## Resume
 BUILD.md Phases 1–4 + C + D complete. **Phase E** (next-level upgrades) is the active track — read `BUILD.md` § Phase E. Run `governor` for audits; deploy only after explicit review.
+
+## Codex coexistence
+
+The repo also ships Codex-native surfaces: `.codex/agents/*.toml` adapters, `.agents/skills/*` discovery symlinks, and a thread cap in `.codex/config.toml` (see `CODEX.md`). These adapt to the same planner/governor/builder conventions; `/orchestrate`, `/closed-loop`, and `/loop` now include Codex routing notes. The canonical agent source remains `agents/*.md`.

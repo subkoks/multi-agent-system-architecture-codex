@@ -83,3 +83,7 @@ Before a big change, after a CC upgrade, or weekly:
 ~/.agents/scripts/sync-check.sh                     # drift check
 cursor-project-bootstrap <repo>                     # per-project AGENTS.md + overrides
 ```
+
+## Codex coexistence
+
+This repo also carries Codex-native adapters (`.codex/agents/*.toml`) and skill discovery symlinks (`.agents/skills/*`) — see `CODEX.md`. They do not affect Cursor; Cursor keeps consuming the Claude deploy path above.

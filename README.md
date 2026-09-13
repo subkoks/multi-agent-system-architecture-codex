@@ -2,7 +2,7 @@
 
 Lean, native-first multi-agent + loop architecture for the BLACK.TERMINAL Claude Code setup.
 
-**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md). ✅ Phase D operational hardening (2026-07-05): smoke test + OpenCode→BSELA hook. ✅ Loop skill in-repo (2026-07-09). ✅ **Phase E** complete (2026-07-11).
+**Status:** ✅ Claude build complete (2026-06-21, BUILD.md Phases 1–4). ✅ Cursor integrated (~90%) via `integrate-cursor-from-claude.sh` — see [CURSOR.md](./CURSOR.md). ✅ Phase D operational hardening (2026-07-05): smoke test + OpenCode→BSELA hook. ✅ Loop skill in-repo (2026-07-09). ✅ **Phase E** complete (2026-07-11). ✅ **Codex-native rebuild** (2026-09-13): native agents, skill discovery, installer — see [CODEX.md](./CODEX.md).
 
 ## What this is
 
@@ -27,9 +27,12 @@ multi-agent-system-architecture-claude-cli/
 ├── PLAN.md        ← the accepted architecture plan (source of truth)
 ├── BUILD.md       ← phased resume map + Phase E upgrades
 ├── AGENTS.md      ← repo guidance for Codex / multi-harness agents
+├── CODEX.md       ← Codex-native agents, skill discovery, installer
 ├── agents/        ← planner.md, governor.md, builder.md
 ├── skills/        ← orchestrate/, closed-loop/, loop/
 ├── scripts/       ← deploy, integrate-cursor, smoke-test
+├── .codex/        ← config.toml + native agent adapters (planner, governor, builder, reviewer)
+├── .agents/       ← skills/ discovery symlinks into skills/
 ├── reference/     ← research-notes, nexus-persona, review-workflow, harness-map
 └── .github/       ← validate workflow (paths, frontmatter, shellcheck)
 ```
@@ -49,7 +52,7 @@ Build is phased and reversible. Each agent/skill is authored **here** first, rev
 
 ## Codex CLI
 
-This repo includes a root `AGENTS.md` and `.codex/config.toml`, so Codex CLI can use the same project guidance in this workspace.
+This repo is Codex-native: `AGENTS.md` carries project guidance, `.codex/agents/*.toml` provides four native agent adapters (planner, governor, builder, reviewer), `.agents/skills/*` makes the three workflow skills discoverable, and `.codex/config.toml` caps spawned threads at three. See [CODEX.md](./CODEX.md).
 
 Recommended entrypoint:
 
@@ -59,7 +62,7 @@ codex
 > Read AGENTS.md, BUILD.md, and PLAN.md before making changes.
 ```
 
-The Claude Code docs remain the canonical architecture source for this repo. Codex uses the same repo instructions and workspace defaults, not a separate fork of the workflow.
+The Claude Code docs remain the canonical architecture source for this repo. Codex uses the same repo instructions and workspace defaults plus thin adapters — not a separate fork of the workflow.
 
 ## Multi-harness
 

@@ -153,3 +153,17 @@ Each phase independently shippable and reversible. Detailed file specs + accepta
 - [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code)
 - [wshobson/agents](https://github.com/wshobson/agents)
 - [VoltAgent subagents](https://github.com/VoltAgent/awesome-claude-code-subagents)
+
+---
+
+## Codex-native rebuild record (2026-09-13)
+
+**Decision:** add thin Codex adapters plus a narrow reversible installer; do not build a universal plugin.
+
+Locked:
+- `agents/*.md` stays the canonical authoring source; `.codex/agents/*.toml` are adapters, not forks.
+- Adapters inherit the parent model; no role-specific model pins.
+- `planner` and `reviewer` run `sandbox_mode = "read-only"`; `governor` writes only `UPGRADE-PROPOSALS.md`.
+- `agents.max_concurrent_threads_per_session = 3` in `.codex/config.toml`.
+- The installer is dry-run by default (`--apply` required), uses a managed-name allowlist, backs up before replacing, records a rollback manifest, never deletes recursively, never `curl | sh`, never touches hooks/MCP/auth, and never invokes the Claude/Cursor deploy script.
+- GitHub operations and the home-dir install are approval-gated, not auto mode.
