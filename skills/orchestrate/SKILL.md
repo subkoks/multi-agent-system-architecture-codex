@@ -83,6 +83,24 @@ When the orchestrator runs in **Cursor** (not Claude Code CLI), map Claude-only 
 
 In Cursor delegation plans, say "Task parallel: builder + test-runner + code-reviewer" instead of "Workflow pipeline". For recurring work, prefer `/loop 30m …` over `/schedule`.
 
+## Codex notes
+
+When the orchestrator runs in **Codex** (CLI, IDE extension, or desktop app), map Claude-only primitives:
+
+| Claude Code | Codex |
+|---|---|
+| `Workflow` tool | Subagent workflow — ask for parallel agents explicitly, one agent per independent point; wait for all, then consolidate |
+| `/schedule` (cloud cron) | `/loop <interval>` (session) or a local LaunchAgent checklist; no cloud cron without a connector |
+| Subagent spawn | Codex custom agents (`.codex/agents/*.toml`) via a direct delegation request |
+| `bsela_route` | BSELA MCP (same tool, same call-before-delegating rule) |
+
+Codex delegation rules:
+- Delegate explicitly: "spawn N agents", "use one agent per point", and say whether to wait for all before continuing.
+- **Write isolation:** on a shared checkout, never give two agents overlapping write sets. Parallel writes require worktree isolation or disjoint files; otherwise serialize. Parallel **read** work (exploration, review, research) is the safe default.
+- Cap spawned threads at three (repo `.codex/config.toml` sets `agents.max_concurrent_threads_per_session = 3`).
+- The closed-loop gate uses the Codex `reviewer` agent for the review leg (see `/closed-loop`).
+- Respect the five-iteration closed-loop cap; no unbounded loops.
+
 ## Step 4 — Enforce eval gate (closed loops)
 
 Gate definition (from `/closed-loop`):

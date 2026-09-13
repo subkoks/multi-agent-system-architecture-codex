@@ -13,7 +13,7 @@ One reusable definition of "done." Every closed loop calls this gate. No eval = 
 | Gate | What passes |
 |---|---|
 | **Tests** | Test suite exits 0 with no skipped-due-to-error |
-| **Reviewer** | `code-reviewer` subagent finds no Critical or Major findings |
+| **Reviewer** | `code-reviewer` subagent (Claude) / `reviewer` agent (Codex) finds no Critical or Major findings |
 | **Type-check** | Type checker exits 0 |
 | **Lint** | Linter exits 0 (warnings allowed; errors not) |
 
@@ -22,6 +22,8 @@ If any leg fails → not done. Fix the specific failure. Re-run gate. Repeat unt
 ## Per-language gate commands
 
 Detect language from: `package.json` (TS/JS), `pyproject.toml`/`setup.py` (Python), `Cargo.toml` (Rust). Run ALL that apply for mixed repos.
+
+**Discover repo-defined commands first.** If the repo defines its own test/lint/typecheck commands (package.json `scripts`, `Makefile`, `Justfile`, CI workflow, repo `AGENTS.md`), use those exact commands — not the generic ones below. Never use `npx --yes` or silently download gate tooling; everything the gate runs must already be declared in the repo.
 
 ### TypeScript / JavaScript
 ```bash
