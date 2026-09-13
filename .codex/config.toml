@@ -3,3 +3,7 @@
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 allow_login_shell = true
+
+# Cap spawned subagent threads (excluding the primary) to control context and token cost.
+[agents]
+max_concurrent_threads_per_session = 3

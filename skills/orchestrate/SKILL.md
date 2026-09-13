@@ -1,12 +1,12 @@
 ---
 name: orchestrate
 description: >
-  Classify a task and produce a delegation plan: which loop type to use (open/closed/dynamic/Workflow), which existing subagents to invoke, what eval gate to enforce, and how to report. Use when asked to orchestrate, coordinate, delegate, or route a task to specialists. Invoked as /orchestrate <task description>. Does NOT execute — it hands you the routing plan so you can confirm before running.
+  Classify a task and produce a delegation plan: which loop type to use (closed/open/dynamic), which Codex agents to spawn, what eval gate to enforce, and how to report. Use when asked to orchestrate, coordinate, delegate, or route a task to specialists. Invoked as $orchestrate <task description>. Does NOT execute — it hands you the routing plan so you can confirm before running.
 ---
 
-# /orchestrate — Delegation Convention
+# $orchestrate — Delegation Convention
 
-The main session (NEXUS) is the orchestrator. This skill is how it reasons about routing before acting.
+The main session is the orchestrator. This skill is how it reasons about routing before acting.
 
 ## Step 1 — Classify the task
 
@@ -16,80 +16,54 @@ The main session (NEXUS) is the orchestrator. This skill is how it reasons about
 | "build", "implement", "fix", "refactor" + can verify with tests | **Closed-loop build** |
 | "research", "explore", "investigate", "what if", no clear deliverable yet | **Open-loop research** |
 | Same thing recurring, "every N minutes", "while sleeping", "keep watching" | **Recurring / scheduled** |
-| Multiple independent file sets, parallel changes, migration sweep | **Workflow fan-out** |
+| Multiple independent file sets, parallel changes, migration sweep | **Parallel fan-out** |
 | Single file, obvious fix, clear path, <30 min work | **Inline (no delegation)** |
 
 ## Step 2 — Pick the loop type
 
 ```
 Inline          → just do it; no subagent needed
-Plan            → delegate to `planner` subagent → review → then execute
-Closed-loop     → /closed-loop skill: implement → gate(tests+review+types) → iterate or ship
-Open-loop       → /loop dynamic (no interval); bound with turn/budget cap
-Recurring       → /loop <interval> (session) OR /schedule (cloud cron, survives exit) [Cursor: /loop interval or automate skill]
-Workflow        → Workflow tool with pipeline()/parallel(); use isolation: worktree for parallel file edits [Cursor: Task tool parallel subagents]
+Plan            → delegate to `planner` agent → review → then execute
+Closed-loop     → $closed-loop skill: implement → gate(tests + reviewer) → iterate or ship
+Open-loop       → $loop dynamic (no interval); bound with turn/budget cap
+Recurring       → $loop <interval> (session) or a local LaunchAgent checklist
+Parallel        → subagent workflow: spawn one agent per independent point, wait, consolidate
 ```
 
 Rule: no loop without an eval gate or a hard turn/budget cap. Unbounded = slop.
 
-**Depth cap:** nested subagent chains are capped at 5 levels (CC v2.1.166+) — plan delegation trees accordingly.
+**Depth cap:** nested delegation is capped at 5 levels — plan delegation trees accordingly.
 
-## Step 3 — Model-tier via `bsela_route`, then map to specialist
+## Step 3 — Route to a Codex agent
 
-**Default: call `bsela_route` first for every delegated subtask.**
-
-```
-bsela_route(task: "<subtask description>")
-→ returns: { role: planner|builder|reviewer|judge|researcher|auditor|debugger|... , model: "..." }
-
-Role → model mapping (2026-07 tier map):
-  main interactive loop      →  claude-fable-5    (NEXUS / long-horizon; not a subagent)
-  planner / judge / auditor  →  claude-opus-4-8   (hard reasoning)
-  builder / debugger         →  claude-sonnet-5    (standard implementation)
-  researcher / distiller     →  claude-sonnet-5    (standard)
-  trivial / batch / memory   →  claude-haiku-4-5-20251001  (cheap)
-```
-
-Use the returned model when spawning the subagent. Override only if the specialist has a hardcoded `model:` in its frontmatter.
-
-Use existing subagents first. New agent only when it reduces friction more than maintenance.
+Repo-native agents (`.codex/agents/*.toml`):
 
 | Work type | Route to |
 |---|---|
-| Pre-merge review | `code-reviewer` |
-| Root-cause debug | `debugger` |
-| Author tests | `test-writer` |
-| Run + repair tests | `test-runner` |
-| Validate "done" | `verifier` |
-| Security audit | `security-auditor` |
-| Prompt injection check | `injection-auditor` |
-| Solana program review | `solana-reviewer` |
-| Cited web research | `web-researcher` |
-| Agent/prompt quality | `prompt-systems-lead` |
-| Docs | `doc-writer` |
+| Plan a big change | `planner` (read-only) |
+| Scoped parallel file changes (1–5 files) | `builder` (one per disjoint file set) |
+| Pre-merge / gate review | `reviewer` (read-only) |
 | System audit / drift / BSELA | `governor` |
-| Scoped parallel file changes | `builder` (worktree-isolated via Workflow; Cursor: Task parallel + builder) |
+| Root-cause debug | main session, or `builder` with a bounded spec |
+| Cited web research | main session (webfetch/websearch) |
 
-## Cursor notes
+Call `bsela_route` first for every delegated subtask when the BSELA MCP is available; treat its role/model suggestion as a routing hint. Models are inherited from the parent session unless the task needs a different reasoning effort — repo agents carry no hardcoded model pins.
 
-When the orchestrator runs in **Cursor** (not Claude Code CLI), map Claude-only primitives:
+## Codex delegation rules
 
-| Claude Code | Cursor |
-|---|---|
-| `Workflow` tool | **Task tool** with 2–3 parallel subagents in one message |
-| `/schedule` (cloud cron) | **`/loop` `<interval>`** (session) or **automate skill** |
-| Subagent spawn | **Task tool** → subagent name |
-| `bsela_route` | BSELA MCP (`user-bsela`) — same tool, call before delegating |
-
-In Cursor delegation plans, say "Task parallel: builder + test-runner + code-reviewer" instead of "Workflow pipeline". For recurring work, prefer `/loop 30m …` over `/schedule`.
+- Delegate explicitly: "spawn N agents", "use one agent per point", and say whether to wait for all before continuing.
+- **Write isolation:** on a shared checkout, never give two agents overlapping write sets. Parallel writes require worktree isolation or disjoint files; otherwise serialize. Parallel read work (exploration, review, research) is the safe default.
+- Cap spawned threads at three (repo `.codex/config.toml` sets `agents.max_concurrent_threads_per_session = 3`).
+- The closed-loop gate uses the Codex `reviewer` agent for the review leg (see `$closed-loop`).
+- Respect the five-iteration closed-loop cap; no unbounded loops.
 
 ## Step 4 — Enforce eval gate (closed loops)
 
-Gate definition (from `/closed-loop`):
-- **Tests pass** (vitest/pytest/cargo test — per language)
-- **Reviewer finds nothing Critical or Major** (`code-reviewer` subagent)
-- **Type-check clean** (tsc --noEmit / mypy / cargo check)
-- **Lint clean** (eslint/ruff/clippy)
+Gate definition (from `$closed-loop`):
+- **Tests pass** (repo-defined test commands)
+- **Reviewer finds nothing Critical or Major** (`reviewer` agent)
+- **Type-check clean** (repo-defined typecheck command)
+- **Lint clean** (repo-defined lint command)
 
 Gate fail → loop back to implement. Gate pass → ship. Never report "done" with a failing gate.
 
@@ -102,7 +76,7 @@ Output format:
 
 **Category:** <from Step 1>
 **Loop type:** <from Step 2>
-**Specialists:** <list from Step 3>
+**Agents:** <list from Step 3>
 **Eval gate:** <what must pass before "done">
 **Turn/budget cap:** <N turns or $X budget>
 **Hard Stops:** <any items needing explicit approval before start>
@@ -118,46 +92,22 @@ Output format:
 
 ## Decision rules
 
-**Delegate to planner when:** request is ambiguous, >5 files, or multiple valid approaches exist — never plan inline.
+**Delegate to `planner` when:** request is ambiguous, >5 files, or multiple valid approaches exist — never plan inline.
 
-**Delegate to Workflow when:** ≥3 independent file sets need parallel processing, or you need adversarial verification (reviewer + skeptic pass on same findings). **In Cursor:** use Task parallel subagents instead of Workflow.
+**Delegate to parallel agents when:** ≥3 independent file sets need processing, or you need adversarial verification. Keep writes isolated.
 
 **Do inline when:** task is a single clear step, <3 files, no ambiguity, and the gate is trivially checkable.
 
 **Never:**
-- Auto-deploy to `~/.claude/` — author-here → review → deploy.
-- Edit governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) — propose; human applies.
+- Auto-deploy to personal dirs — author-here → review → deploy via `scripts/install-codex-local.sh --apply` (approval-gated).
+- Edit governance files (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors).
 - Start a closed loop without an eval gate.
 - Spawn a new persistent "manager daemon" — the main session is the only orchestrator.
-
-## Usage examples
-
-```
-/orchestrate "refactor auth middleware to use JWT instead of sessions"
-→ Category: Closed-loop build (touches auth, middleware, tests, types)
-→ Loop: /closed-loop → implement → gate(vitest+tsc+code-reviewer) → ship
-→ Specialists: code-reviewer (post-implement), security-auditor (auth change)
-→ Hard Stop: auth/session changes → sign-off before execute
-
-/orchestrate "investigate why the Solana swap bot is overpaying priority fees"
-→ Category: Open-loop research
-→ Loop: /loop dynamic, cap 20 turns
-→ Specialists: web-researcher (fee market docs), solana-reviewer (bot code)
-→ Eval gate: hypothesis confirmed + root cause identified (not "done" = just looked)
-
-/orchestrate "migrate 40 route files from Express to Hono"
-→ Category: Workflow fan-out
-→ Loop: Workflow pipeline(files, transform, verify) isolation: worktree
-→ Specialists: builder (per-file transform, worktree-isolated), test-runner (verify), code-reviewer (sample check)
-→ Budget cap: set in Workflow budget.total
-→ bsela_route("transform Express route file to Hono") → builder role → claude-sonnet-5
-→ Cursor variant: Task parallel builder (per-file batches) + test-runner + code-reviewer sample
-```
 
 ## Self-check before handing plan to user
 
 - [ ] Loop type matches task category (no open loop for a build task).
-- [ ] Every specialist named exists in `~/.claude/agents/` or is a native primitive.
+- [ ] Every agent named exists in `.codex/agents/` or is built-in.
 - [ ] Eval gate is concrete (commands, not "verify it works").
 - [ ] Hard Stops are listed before execution order.
 - [ ] No new agent proposed without explicit justification.

@@ -16,45 +16,77 @@ jobs:
 
       - name: Required paths exist
         run: |
-          test -f agents/planner.md
-          test -f agents/governor.md
-          test -f agents/builder.md
+          test -f README.md
+          test -f AGENTS.md
+          test -f CODEX.md
+          test -f PLAN.md
+          test -f BUILD.md
+          test -f .codex/config.toml
+          test -f .codex/agents/planner.toml
+          test -f .codex/agents/governor.toml
+          test -f .codex/agents/builder.toml
+          test -f .codex/agents/reviewer.toml
           test -f skills/orchestrate/SKILL.md
           test -f skills/closed-loop/SKILL.md
           test -f skills/loop/SKILL.md
-          test -x scripts/deploy-to-claude-and-cursor.sh
-          test -x scripts/integrate-cursor-from-claude.sh
-          test -x scripts/smoke-test.sh
+          test -x scripts/install-codex-local.sh
+          test -x scripts/smoke-test-codex.sh
           test -x scripts/eval-skill-smoke.sh
           test -f reference/harness-map.md
           test -f SECURITY.md
 
-      - name: Agent frontmatter
+      - name: Claude/Cursor surfaces removed
         run: |
-          for f in agents/planner.md agents/governor.md agents/builder.md; do
-            grep -q '^name:' "$f"
-            grep -q '^description:' "$f"
-            grep -q '^model:' "$f"
+          for p in CLAUDE.md CURSOR.md \
+            agents/planner.md agents/governor.md agents/builder.md \
+            scripts/deploy-to-claude-and-cursor.sh \
+            scripts/integrate-cursor-from-claude.sh \
+            scripts/smoke-test.sh \
+            .claude/settings.json .cursor/rules/project-overrides.mdc; do
+            test ! -e "$p" || { echo "legacy surface present: $p"; exit 1; }
           done
-          # Builder must track standard implementer tier (not stale sonnet-4-6)
-          grep -q 'model: claude-sonnet-5' agents/builder.md
-          ! grep -q 'claude-sonnet-4-6' agents/builder.md
+
+      - name: Codex config and agents
+        run: |
+          for s in orchestrate closed-loop loop; do
+            test -L ".agents/skills/$s"
+            test -f ".agents/skills/$s/SKILL.md"
+          done
+          python3 - <<'PY'
+          import pathlib, tomllib
+          cfg = tomllib.load(open(".codex/config.toml", "rb"))
+          assert cfg["agents"]["max_concurrent_threads_per_session"] == 3
+          expected = {"planner", "governor", "builder", "reviewer"}
+          found = set()
+          for p in pathlib.Path(".codex/agents").glob("*.toml"):
+              d = tomllib.load(open(p, "rb"))
+              for k in ("name", "description", "developer_instructions"):
+                  assert k in d, f"{p}: missing {k}"
+              found.add(d["name"])
+              if d["name"] in {"planner", "reviewer"}:
+                  assert d.get("sandbox_mode") == "read-only"
+          assert found == expected, f"agent set {found} != {expected}"
+          PY
 
       - name: Shell syntax
         run: |
-          bash -n scripts/deploy-to-claude-and-cursor.sh
-          bash -n scripts/integrate-cursor-from-claude.sh
-          bash -n scripts/smoke-test.sh
+          bash -n scripts/install-codex-local.sh
+          bash -n scripts/smoke-test-codex.sh
           bash -n scripts/eval-skill-smoke.sh
 
       - name: Skill contracts
         run: scripts/eval-skill-smoke.sh --quiet
 
+      - name: Codex smoke (repo)
+        run: scripts/smoke-test-codex.sh --repo --quiet
+
+      - name: Installer dry-run
+        run: scripts/install-codex-local.sh
+
       - name: Shellcheck
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq shellcheck
-          shellcheck -x scripts/deploy-to-claude-and-cursor.sh \
-            scripts/integrate-cursor-from-claude.sh \
-            scripts/smoke-test.sh \
+          shellcheck -x scripts/install-codex-local.sh \
+            scripts/smoke-test-codex.sh \
             scripts/eval-skill-smoke.sh

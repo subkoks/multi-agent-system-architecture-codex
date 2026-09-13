@@ -62,6 +62,15 @@ echo 'AGENT_LOOP_WAKE_<purpose> {"prompt":"<prompt>"}'
 
 Wake notifications include an output file path, not a submitted prompt. Put the prompt beside the sentinel, preferably as JSON. On wake, read the latest matching line and act on its `prompt`. The prompt may vary by tick.
 
+## Expiry and stop conditions
+
+Every loop must declare at least one bound before it starts:
+- a fixed interval with an explicit stop (total duration, tick count, or an end condition), or
+- dynamic mode with a turn/budget cap, or
+- an event-gated watcher that exits when the event fires (with a fallback heartbeat timeout).
+
+An unbounded loop with no expiry, iteration limit, or stop condition is forbidden — refuse to start it.
+
 ## Guidance
 
 - Title shell commands as `Loop <schedule>: <prompt>` (e.g. `Loop every 5m: check deploy status`).
