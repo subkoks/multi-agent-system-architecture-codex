@@ -28,6 +28,36 @@ jobs:
           test -x scripts/eval-skill-smoke.sh
           test -f reference/harness-map.md
           test -f SECURITY.md
+          test -f CODEX.md
+
+      - name: Codex config and agents
+        run: |
+          test -f .codex/config.toml
+          test -f .codex/agents/planner.toml
+          test -f .codex/agents/governor.toml
+          test -f .codex/agents/builder.toml
+          test -f .codex/agents/reviewer.toml
+          # Discovery symlinks resolve to the canonical skills.
+          for s in orchestrate closed-loop loop; do
+            test -L ".agents/skills/$s"
+            test -f ".agents/skills/$s/SKILL.md"
+          done
+          # TOML parses; agent schema and thread cap hold.
+          python3 - <<'PY'
+          import pathlib, tomllib
+          cfg = tomllib.load(open(".codex/config.toml", "rb"))
+          assert cfg["agents"]["max_concurrent_threads_per_session"] == 3
+          expected = {"planner", "governor", "builder", "reviewer"}
+          found = set()
+          for p in pathlib.Path(".codex/agents").glob("*.toml"):
+              d = tomllib.load(open(p, "rb"))
+              for k in ("name", "description", "developer_instructions"):
+                  assert k in d, f"{p}: missing {k}"
+              found.add(d["name"])
+              if d["name"] in {"planner", "reviewer"}:
+                  assert d.get("sandbox_mode") == "read-only"
+          assert found == expected, f"agent set {found} != {expected}"
+          PY
 
       - name: Agent frontmatter
         run: |
@@ -46,9 +76,17 @@ jobs:
           bash -n scripts/integrate-cursor-from-claude.sh
           bash -n scripts/smoke-test.sh
           bash -n scripts/eval-skill-smoke.sh
+          bash -n scripts/install-codex-local.sh
+          bash -n scripts/smoke-test-codex.sh
 
       - name: Skill contracts
         run: scripts/eval-skill-smoke.sh --quiet
+
+      - name: Codex smoke (repo)
+        run: scripts/smoke-test-codex.sh --quiet
+
+      - name: Installer dry-run
+        run: scripts/install-codex-local.sh
 
       - name: Shellcheck
         run: |
@@ -57,4 +95,6 @@ jobs:
           shellcheck -x scripts/deploy-to-claude-and-cursor.sh \
             scripts/integrate-cursor-from-claude.sh \
             scripts/smoke-test.sh \
-            scripts/eval-skill-smoke.sh
+            scripts/eval-skill-smoke.sh \
+            scripts/install-codex-local.sh \
+            scripts/smoke-test-codex.sh

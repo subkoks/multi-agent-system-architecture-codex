@@ -71,6 +71,13 @@ require_grep "skills/closed-loop/SKILL.md" 'governance|AGENTS.md' "closed-loop: 
 require_grep "skills/loop/SKILL.md" 'dynamic' "loop: dynamic mode"
 require_grep "skills/loop/SKILL.md" 'AGENT_LOOP' "loop: sentinel pattern"
 
+# Codex-native contracts (Codex rebuild)
+require_grep "skills/orchestrate/SKILL.md" 'Codex notes' "orchestrate: Codex routing"
+require_grep "skills/orchestrate/SKILL.md" 'Write isolation' "orchestrate: Codex write isolation"
+require_grep "skills/closed-loop/SKILL.md" 'agent \(Codex\)' "closed-loop: Codex reviewer leg"
+require_grep "skills/closed-loop/SKILL.md" 'npx --yes' "closed-loop: no npx --yes"
+require_grep "skills/loop/SKILL.md" 'Expiry and stop conditions' "loop: expiry/stop rule"
+
 # agent model pins (repo-owned)
 require_grep "agents/builder.md" '^model: claude-sonnet-5' "builder model pin"
 require_grep "agents/planner.md" '^model: claude-opus-4-8' "planner model pin"
