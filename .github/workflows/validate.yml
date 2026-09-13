@@ -32,6 +32,7 @@ jobs:
           test -x scripts/install-codex-local.sh
           test -x scripts/smoke-test-codex.sh
           test -x scripts/eval-skill-smoke.sh
+          test -x scripts/codex-health.sh
           test -f reference/harness-map.md
           test -f SECURITY.md
 
@@ -73,12 +74,16 @@ jobs:
           bash -n scripts/install-codex-local.sh
           bash -n scripts/smoke-test-codex.sh
           bash -n scripts/eval-skill-smoke.sh
+          bash -n scripts/codex-health.sh
 
       - name: Skill contracts
         run: scripts/eval-skill-smoke.sh --quiet
 
       - name: Codex smoke (repo)
         run: scripts/smoke-test-codex.sh --repo --quiet
+
+      - name: Codex health (repo)
+        run: scripts/codex-health.sh --repo --quiet
 
       - name: Installer dry-run
         run: scripts/install-codex-local.sh
@@ -89,4 +94,5 @@ jobs:
           sudo apt-get install -y -qq shellcheck
           shellcheck -x scripts/install-codex-local.sh \
             scripts/smoke-test-codex.sh \
-            scripts/eval-skill-smoke.sh
+            scripts/eval-skill-smoke.sh \
+            scripts/codex-health.sh
