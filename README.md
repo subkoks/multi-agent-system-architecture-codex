@@ -52,3 +52,15 @@ The repo was originally built for Claude Code (`BUILD.md` Phases 1–E, 2026-06-
 ## Governor cadence
 
 GOVERNOR stays **on-demand** (a cron-like cloud routine cannot reach local BSELA). Habit: before big changes or after a Codex upgrade, run `governor` → review `UPGRADE-PROPOSALS.md` → apply only approved items → `scripts/smoke-test-codex.sh` after any install.
+
+## Health maintenance
+
+Run the compact, read-only health check after a Codex update and monthly:
+
+```bash
+scripts/codex-health.sh          # repo contracts + local CLI/config health
+scripts/codex-health.sh --repo   # repository contracts only
+scripts/codex-health.sh --local  # local Codex/config inventories only
+```
+
+It validates config syntax, profiles, the repository contract, and CLI inventories. It does not install or update anything, start MCP servers, or run hooks. `codex doctor` may perform its own redacted provider reachability diagnostic.
