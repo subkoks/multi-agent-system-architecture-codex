@@ -26,6 +26,8 @@ jobs:
           test -x scripts/integrate-cursor-from-claude.sh
           test -x scripts/smoke-test.sh
           test -x scripts/eval-skill-smoke.sh
+          test -x scripts/install-codex-local.sh
+          test -x scripts/smoke-test-codex.sh
           test -f reference/harness-map.md
           test -f SECURITY.md
           test -f CODEX.md
