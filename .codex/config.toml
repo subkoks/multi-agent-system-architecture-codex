@@ -1,6 +1,5 @@
 # Repo-local Codex defaults for this workspace.
 
-sandbox_mode = "danger-full-access"
 approval_policy = "on-request"
 allow_login_shell = true
 
