@@ -65,7 +65,7 @@ jobs:
                   assert k in d, f"{p}: missing {k}"
               found.add(d["name"])
               if d["name"] in {"planner", "reviewer"}:
-                  assert d.get("sandbox_mode") == "read-only"
+                  assert d.get("default_permissions") == ":read-only"
           assert found == expected, f"agent set {found} != {expected}"
           PY
 

@@ -47,20 +47,29 @@ for p in agents:
     for k in ("name", "description", "developer_instructions"):
         assert k in d, f"{p}: missing {k}"
     found.add(d["name"])
-    if d["name"] in {"planner", "reviewer"}:
-        assert d.get("sandbox_mode") == "read-only", f"{p}: expected read-only"
+    permissions = ":read-only" if d["name"] in {"planner", "reviewer"} else ":workspace"
+    assert d.get("default_permissions") == permissions, f"{p}: expected {permissions}"
+    for key in ("sandbox_mode", "sandbox_workspace_write", "model", "model_reasoning_effort", "model_provider", "model_catalog_json"):
+        assert key not in d, f"{p}: {key} overrides permission profiles or inherited model selection"
 assert found == expected, f"agent set {found} != {expected}"
 PY
 pass "agent TOML schema + allowlist (4 agents, read-only where required)"
 
-# --- Config thread cap ---
+# --- Project permissions, model inheritance, and thread cap ---
 python3 - "${REPO}" <<'PY'
 import pathlib, sys, tomllib
 cfg = tomllib.load(open(pathlib.Path(sys.argv[1]) / ".codex" / "config.toml", "rb"))
+assert cfg.get("default_permissions") == ":workspace", "expected workspace permissions"
+assert cfg.get("approval_policy") == "on-request", "expected on-request approvals"
+assert cfg.get("approvals_reviewer") == "user", "expected human approval reviewer"
+for key in ("sandbox_mode", "sandbox_workspace_write", "model", "model_reasoning_effort", "model_provider", "model_catalog_json"):
+    assert key not in cfg, f"project {key} overrides permission profiles or inherited model selection"
+for key in ("default_subagent_model", "default_subagent_reasoning_effort"):
+    assert key not in cfg.get("agents", {}), f"agents.{key} overrides parent model selection"
 cap = cfg["agents"]["max_concurrent_threads_per_session"]
 assert cap == 3, f"expected thread cap 3, got {cap}"
 PY
-pass "config: agents.max_concurrent_threads_per_session = 3"
+pass "config: workspace permissions, human approvals, inherited models, three-thread cap"
 
 # --- Skill discovery symlinks ---
 for skill in orchestrate closed-loop loop; do
