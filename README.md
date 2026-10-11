@@ -64,3 +64,7 @@ scripts/codex-health.sh --local  # local Codex/config inventories only
 ```
 
 It validates config syntax, profiles, the repository contract, and CLI inventories. It does not install or update anything, start MCP servers, or run hooks. `codex doctor` may perform its own redacted provider reachability diagnostic.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
