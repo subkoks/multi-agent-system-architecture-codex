@@ -1,9 +1,12 @@
 # Repo-local Codex defaults for this workspace.
 
 approval_policy = "on-request"
+approvals_reviewer = "user"
+default_permissions = ":workspace"
 allow_login_shell = true
 
-# Cap spawned subagent threads (excluding the primary) to control context and token cost.
+# Inherit model/provider/effort from the selected user profile. Do not pin retired models here.
 web_search = "live"
 [agents]
+# Cap spawned subagent threads (excluding the primary) to control context and token cost.
 max_concurrent_threads_per_session = 3
