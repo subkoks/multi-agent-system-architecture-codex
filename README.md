@@ -45,6 +45,32 @@ codex
 
 Build is phased and reversible. Each agent/skill is authored **here** first, reviewed, then installed to `~/.codex/...` and `~/.agents/skills/...` via `scripts/install-codex-local.sh` — deployment is deliberate, not automatic.
 
+### Prerequisites and local verification
+
+This repository has no app or dependency-install step. Opening it in Codex is enough to use its project agents and skills; personal installation is optional. Read `AGENTS.md`, `README.md`, `PLAN.md`, `BUILD.md`, and `CODEX.md` before editing, treating the marked Claude-era sections as history. Use a feature branch and preserve unrelated work.
+
+The repository checks require Bash, Python **3.11+** (`tomllib`), and standard Unix tools. Codex CLI is needed for interactive use; the repository smoke test skips its CLI check when Codex is unavailable. ShellCheck is optional locally and required by CI.
+
+From the repository root, these checks validate shell syntax, skill contracts, agent TOML, discovery links, and repository configuration without installing anything:
+
+```bash
+bash -n scripts/install-codex-local.sh
+bash -n scripts/smoke-test-codex.sh
+bash -n scripts/eval-skill-smoke.sh
+bash -n scripts/codex-health.sh
+scripts/eval-skill-smoke.sh
+scripts/codex-health.sh --repo
+git diff --check
+```
+
+The health command above runs `scripts/smoke-test-codex.sh --repo`; it does not check personal installations or provider access. If ShellCheck is already installed, also run the CI lint command:
+
+```bash
+shellcheck -x scripts/install-codex-local.sh scripts/smoke-test-codex.sh scripts/eval-skill-smoke.sh scripts/codex-health.sh
+```
+
+For an optional personal installation, first inspect `scripts/install-codex-local.sh` and run it without arguments to preview changes. `--apply` requires explicit approval. See [CODEX.md](./CODEX.md#local-installation-approval-required) for installation and rollback details.
+
 ## Claude-era history
 
 The repo was originally built for Claude Code (`BUILD.md` Phases 1–E, 2026-06-21 → 2026-07-11). Claude Code and Cursor were retired on 2026-09-13; those phases remain documented history, and the Claude-specific files live only in git history.
