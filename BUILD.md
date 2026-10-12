@@ -188,7 +188,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 - [x] F2. **Codex-aware workflows** — Codex routing + write-isolation notes in `/orchestrate`; `reviewer` adapter leg, repo-first gate commands, no `npx --yes` in `/closed-loop`; expiry/stop rule in `/loop`; delegation + thread-cap rules in `AGENTS.md`.
 - [x] F3. **Installer + validation** — `scripts/install-codex-local.sh` (dry-run default, managed allowlist, backups, rollback manifest), `scripts/smoke-test-codex.sh` (`--repo`/`--live`), CI TOML/symlink/schema checks + installer dry-run, `SECURITY.md` notes. Apply/rollback proven against a fake `HOME`.
 - [x] F4. **Docs** — `CODEX.md`; README, PLAN, CLAUDE, CURSOR, harness-map reconciled.
-- [ ] F5. **Local install (APPROVAL)** — `install-codex-local.sh --apply`, Cursor extension install, desktop app open. Phase 5 of the rebuild plan; not executed by default.
+- [ ] F5. **Historical local-install proposal — superseded by Phase H.** The original installer/editor steps were not executed; use the current Codex-only procedure below.
 
 Deploy note: the F2 skill edits drift vs `~/.claude` until `scripts/deploy-to-claude-and-cursor.sh` next runs (that deploy is outside rebuild scope).
 
@@ -206,6 +206,18 @@ Deploy note: the F2 skill edits drift vs `~/.claude` until `scripts/deploy-to-cl
 - [x] G4. **Single installer** — `scripts/install-codex-local.sh` is the only deploy path; `scripts/smoke-test-codex.sh` the only smoke suite; CI asserts legacy surfaces are absent.
 
 **Verify:** `scripts/eval-skill-smoke.sh --quiet`, `scripts/smoke-test-codex.sh --repo --quiet`, `scripts/install-codex-local.sh` (dry-run), `git diff --check`, CI validate green.
+
+---
+
+## Phase H — Canonical personal library compatibility (2026-10-12)
+
+- [x] H1. **Repository agents modernized** — current permission profiles; inherit the parent model/provider/effort; merged in PR16.
+- [x] H2. **Quiet failure diagnostics** — failures stay visible in CI; offline regression and native Goal/reviewer passed; merged in PR17.
+- [x] H3. **Scoped installer authored and reviewed** — `--agents-only` preserves canonical `~/.agents/skills/` directories and Codex skill mirrors. All selected collisions are checked before writes; backups use `~/.agents/backups/`. Offline apply/rollback, full-mode compatibility, collision refusal, ShellCheck, repository gates, and independent review pass.
+- [ ] H4. **Live installation (explicit approval)** — run `scripts/install-codex-local.sh --agents-only --apply`, retain its manifest, then `scripts/smoke-test-codex.sh --live --agents-only`. Creates governor/builder and replaces planner/reviewer under `~/.codex/agents/`; does not deploy skills or change global configuration.
+- [ ] H5. **Fresh-session acceptance** — confirm installed agent discovery and inherited model selection in a new Codex session. Offline fixtures do not establish live deployment.
+
+See `CODEX.md` for the current installation and rollback procedure.
 
 ---
 

@@ -18,6 +18,7 @@
 #
 # Usage:
 #   scripts/install-codex-local.sh                    # dry-run (default)
+#   scripts/install-codex-local.sh --agents-only      # preserve personal skills
 #   scripts/install-codex-local.sh --apply            # install
 #   scripts/install-codex-local.sh --rollback <manifest>
 set -euo pipefail
@@ -34,26 +35,28 @@ ALLOW_AGENTS=(planner governor builder reviewer)
 ALLOW_SKILLS=(orchestrate closed-loop loop)
 
 ACTION="dry-run"
+AGENTS_ONLY=0
 ROLLBACK_MANIFEST=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --apply) ACTION="apply" ;;
+    --agents-only) AGENTS_ONLY=1 ;;
     --rollback)
       [[ $# -ge 2 ]] || { printf '[ERR ] --rollback requires a manifest path\n' >&2; exit 2; }
       ROLLBACK_MANIFEST="$2"
       ACTION="rollback"
       shift
       ;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
     *) printf '[ERR ] unknown option: %s\n' "$1" >&2; exit 2 ;;
   esac
   shift
 done
 
-TS="$(date +%Y%m%dT%H%M%S)"
-MANIFEST=""
-BACKUP_DIR=""
+TS="$(date +%Y%m%dT%H%M%S)-$$"
+MANIFEST="${MANIFEST_DIR}/install-${TS}.manifest"
+BACKUP_DIR="${HOME}/.agents/backups/codex-native-install-${TS}"
 PLANNED=0
 
 note()  { printf '  %s\n' "$*"; }
@@ -62,8 +65,6 @@ doit()  { printf '[APPLY] %s\n' "$*"; }
 refuse(){ printf '[REFUSE] %s\n' "$*" >&2; exit 1; }
 
 manifest_init() {
-  MANIFEST="${MANIFEST_DIR}/install-${TS}.manifest"
-  BACKUP_DIR="${MANIFEST_DIR}/install-${TS}.backup"
   mkdir -p "${MANIFEST_DIR}" "${BACKUP_DIR}"
   : > "${MANIFEST}"
 }
@@ -75,8 +76,40 @@ manifest_add() {
 
 ensure_parent() {
   local dir="$1"
-  if [[ -e "$dir" && ! -d "$dir" ]]; then
+  if [[ ( -e "$dir" || -L "$dir" ) && ! -d "$dir" ]]; then
     refuse "$dir exists but is not a directory"
+  fi
+}
+
+# Validate every selected destination before creating even the manifest. A late
+# skill collision must not leave earlier agents or links partially installed.
+preflight() {
+  local name dst
+  ensure_parent "${HOME}/.codex"
+  ensure_parent "${AGENT_DST}"
+  ensure_parent "${MANIFEST_DIR}"
+  ensure_parent "${HOME}/.agents"
+  ensure_parent "${HOME}/.agents/backups"
+  [[ ! -e "$MANIFEST" && ! -L "$MANIFEST" ]] || refuse "manifest already exists: $MANIFEST"
+  [[ ! -e "$BACKUP_DIR" && ! -L "$BACKUP_DIR" ]] || refuse "backup already exists: $BACKUP_DIR"
+  for name in "${ALLOW_AGENTS[@]}"; do
+    [[ -f "${AGENT_SRC}/${name}.toml" ]] || refuse "agent source missing: ${AGENT_SRC}/${name}.toml"
+    dst="${AGENT_DST}/${name}.toml"
+    if [[ -e "$dst" || -L "$dst" ]]; then
+      [[ ! -L "$dst" && -f "$dst" ]] || refuse "unknown collision at $dst — expected a regular agent file"
+    fi
+  done
+  if [[ "$AGENTS_ONLY" -eq 0 ]]; then
+    ensure_parent "${CODEX_SKILL_DST}"
+    ensure_parent "${AGENTS_SKILL_DST}"
+    for name in "${ALLOW_SKILLS[@]}"; do
+      [[ -f "${SKILL_SRC}/${name}/SKILL.md" ]] || refuse "skill source missing: ${SKILL_SRC}/${name}/SKILL.md"
+      for dst in "${CODEX_SKILL_DST}/${name}" "${AGENTS_SKILL_DST}/${name}"; do
+        if [[ ( -e "$dst" || -L "$dst" ) && ! -L "$dst" ]]; then
+          refuse "unknown collision at $dst — expected a symlink, found something else"
+        fi
+      done
+    done
   fi
 }
 
@@ -172,6 +205,8 @@ if [[ "$ACTION" == "rollback" ]]; then
   exit 0
 fi
 
+preflight
+
 if [[ "$ACTION" == "apply" ]]; then
   manifest_init
   printf '[INFO] Manifest: %s\n' "$MANIFEST"
@@ -184,10 +219,14 @@ printf '[INFO] Repo: %s\n' "$REPO"
 for name in "${ALLOW_AGENTS[@]}"; do
   install_agent "$name"
 done
-for name in "${ALLOW_SKILLS[@]}"; do
-  install_skill_link "$name" "${CODEX_SKILL_DST}"
-  install_skill_link "$name" "${AGENTS_SKILL_DST}"
-done
+if [[ "$AGENTS_ONLY" -eq 0 ]]; then
+  for name in "${ALLOW_SKILLS[@]}"; do
+    install_skill_link "$name" "${CODEX_SKILL_DST}"
+    install_skill_link "$name" "${AGENTS_SKILL_DST}"
+  done
+else
+  note "agents-only: personal skill paths are not managed"
+fi
 
 printf '\n[INFO] %s: %d planned operation(s).\n' "$ACTION" "$PLANNED"
 if [[ "$ACTION" == "dry-run" ]]; then

@@ -69,7 +69,7 @@ The health command above runs `scripts/smoke-test-codex.sh --repo`; it does not 
 shellcheck -x scripts/install-codex-local.sh scripts/smoke-test-codex.sh scripts/eval-skill-smoke.sh scripts/codex-health.sh
 ```
 
-For an optional personal installation, first inspect `scripts/install-codex-local.sh` and run it without arguments to preview changes. `--apply` requires explicit approval. See [CODEX.md](./CODEX.md#local-installation-approval-required) for installation and rollback details.
+For an optional personal installation, first inspect `scripts/install-codex-local.sh`. Use `scripts/install-codex-local.sh --agents-only` to preview installing the four agents while preserving your canonical personal skills, then add `--apply` only with explicit approval. Verify that mode with `scripts/smoke-test-codex.sh --live --agents-only`. The default full installer also manages skill symlinks and refuses existing skill directories before making changes. See [CODEX.md](./CODEX.md#local-installation-approval-required) for installation and rollback details.
 
 ## Claude-era history
 
