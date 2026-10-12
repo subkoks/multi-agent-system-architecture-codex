@@ -16,7 +16,7 @@ log() {
   fi
 }
 pass() { log "[ OK ] $*"; }
-fail() { log "[FAIL] $*"; FAIL=1; }
+fail() { printf '[FAIL] %s\n' "$*" >&2; FAIL=1; }
 
 require_file() {
   local path="$1"

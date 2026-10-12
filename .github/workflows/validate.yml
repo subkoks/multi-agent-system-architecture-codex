@@ -79,6 +79,9 @@ jobs:
       - name: Skill contracts
         run: scripts/eval-skill-smoke.sh --quiet
 
+      - name: Quiet diagnostics regression (offline)
+        run: python3 scripts/check-quiet-diagnostics.py
+
       - name: Codex smoke (repo)
         run: scripts/smoke-test-codex.sh --repo --quiet
 
