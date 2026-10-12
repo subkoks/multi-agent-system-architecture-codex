@@ -5,12 +5,14 @@
 #   scripts/smoke-test-codex.sh              # repo checks (default)
 #   scripts/smoke-test-codex.sh --repo       # explicit repo checks
 #   scripts/smoke-test-codex.sh --live       # repo + ~/.codex / ~/.agents install checks
+#   scripts/smoke-test-codex.sh --live --agents-only # repo + installed agents only
 #   scripts/smoke-test-codex.sh --quiet      # exit code only; print failures
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 QUIET=0
 LIVE=0
+AGENTS_ONLY=0
 FAIL=0
 
 log() {
@@ -26,11 +28,17 @@ while [[ $# -gt 0 ]]; do
     --quiet|-q) QUIET=1 ;;
     --repo) LIVE=0 ;;
     --live) LIVE=1 ;;
-    -h|--help) sed -n '2,7p' "$0"; exit 0 ;;
+    --agents-only) AGENTS_ONLY=1 ;;
+    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
     *) printf '[ERR ] unknown option: %s\n' "$1" >&2; exit 2 ;;
   esac
   shift
 done
+
+if [[ "$AGENTS_ONLY" -eq 1 && "$LIVE" -eq 0 ]]; then
+  printf '[ERR ] --agents-only requires --live\n' >&2
+  exit 2
+fi
 
 log "=== Codex-native smoke test ==="
 
@@ -125,19 +133,21 @@ if [[ "$LIVE" -eq 1 ]]; then
     if [[ -f "$dst" ]] && diff -q "$src" "$dst" >/dev/null 2>&1; then
       pass "agent ${name}.toml matches repo"
     else
-      fail "agent ${name}.toml missing or drifted (run scripts/install-codex-local.sh --apply)"
+      fail "agent ${name}.toml missing or drifted (run scripts/install-codex-local.sh --agents-only --apply)"
     fi
   done
-  for skill in orchestrate closed-loop loop; do
-    for base in "${HOME}/.codex/skills" "${HOME}/.agents/skills"; do
-      link="${base}/${skill}"
-      if [[ -L "$link" ]] && [[ "$(readlink "$link")" == "${REPO}/skills/${skill}" ]] && [[ -f "${link}/SKILL.md" ]]; then
-        pass "${base}/${skill} -> repo"
-      else
-        fail "${base}/${skill} not pointed at repo (run installer --apply)"
-      fi
+  if [[ "$AGENTS_ONLY" -eq 0 ]]; then
+    for skill in orchestrate closed-loop loop; do
+      for base in "${HOME}/.codex/skills" "${HOME}/.agents/skills"; do
+        link="${base}/${skill}"
+        if [[ -L "$link" ]] && [[ "$(readlink "$link")" == "${REPO}/skills/${skill}" ]] && [[ -f "${link}/SKILL.md" ]]; then
+          pass "${base}/${skill} -> repo"
+        else
+          fail "${base}/${skill} not pointed at repo (run installer --apply)"
+        fi
+      done
     done
-  done
+  fi
 fi
 
 log ""

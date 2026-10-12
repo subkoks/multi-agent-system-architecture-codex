@@ -57,11 +57,16 @@ The IDE extension and the desktop app pick up the same project config, agents, a
 
 ```bash
 scripts/install-codex-local.sh            # dry-run (default)
-scripts/install-codex-local.sh --apply    # install to ~/.codex + ~/.agents
-scripts/smoke-test-codex.sh --live        # verify the install
+scripts/install-codex-local.sh --agents-only # preview agents, preserve personal skills
+scripts/install-codex-local.sh --agents-only --apply # install four agents only
+scripts/smoke-test-codex.sh --live --agents-only # verify installed agents
 ```
 
-The installer copies the four agents to `~/.codex/agents/` and repoints the three managed skill symlinks under `~/.codex/skills/` and `~/.agents/skills/` at this repo. Dry-run by default; every change is recorded in a rollback manifest (`--rollback <manifest>`).
+Use `--agents-only` when `~/.agents/skills/` contains your canonical personal skill directories and `~/.codex/skills/` mirrors them. It copies only the four agents to `~/.codex/agents/`; every personal skill path stays untouched. Repository skills remain available when this repository is open.
+
+Without `--agents-only`, the full installer also repoints the three managed skill symlinks under `~/.codex/skills/` and `~/.agents/skills/` at this repo. Existing skill directories are refused; the full installer does not replace a canonical personal library. It checks all selected sources and collisions before making changes. Run `scripts/smoke-test-codex.sh --live` to verify a full installation.
+
+Dry-run is the default and writes nothing. `--apply` requires explicit approval. Every applied file/link change is recorded in a rollback manifest under `~/.codex/install-manifests/`, with original agent files backed up under `~/.agents/backups/codex-native-install-<timestamp>/`. Use `scripts/install-codex-local.sh --rollback <manifest>` to restore the prior files and links. Existing manifests with older backup locations remain usable. Rollback leaves manifest/backup records and any created parent directories in place.
 
 ## Drift and rollback
 

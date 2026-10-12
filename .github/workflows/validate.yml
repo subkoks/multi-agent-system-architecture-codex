@@ -91,6 +91,9 @@ jobs:
       - name: Installer dry-run
         run: scripts/install-codex-local.sh
 
+      - name: Installer migration regression (offline)
+        run: python3 scripts/check-installer-migration.py
+
       - name: Shellcheck
         run: |
           sudo apt-get update -qq
