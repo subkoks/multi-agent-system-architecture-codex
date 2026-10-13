@@ -1,53 +1,69 @@
-# multi-agent-system-architecture-codex
+<h1>
+  <picture>
+    <source media="(max-width: 600px)" srcset="assets/readme/hero-mobile.svg">
+    <img src="assets/readme/hero.svg" width="100%" alt="Codex agent architecture — BLACK.TERMINAL">
+  </picture>
+</h1>
 
-Lean, native-first multi-agent + loop architecture for the BLACK.TERMINAL Codex setup (CLI, IDE extension, and ChatGPT desktop).
+Four specialist agents. Three workflow skills. One Codex session coordinating the work.
 
-**Status:** ✅ **Codex-native rebuild** complete (2026-09-13): native agents, skill discovery, reversible installer — see [CODEX.md](./CODEX.md). Claude-era build Phases 1–E (2026-06-21 → 2026-07-11) are kept as history in `BUILD.md`; Claude Code and Cursor were retired 2026-09-13.
+**[Quick start](#quick-start)** · [Architecture](#architecture) · [Installation](#installation) · [Verification](#verification) · [Documentation](#documentation)
 
-## What this is
+Native agent configuration, bounded loops, and a reversible installer for the BLACK.TERMINAL Codex setup. The main session plans and delegates; specialists handle focused tasks and review the result.
 
-A small layer that codifies how the main session plans, delegates, gates, and loops:
+## Quick start
 
-1. **planner** agent — read-only implementation planner (3–7 phases, trade-offs, acceptance criteria).
-2. **governor** agent — independent auditor on top of BSELA; emits dated upgrade proposals (never auto-applies).
-3. **builder** agent — scoped implementer for isolated parallel work (1–5 files).
-4. **reviewer** agent — the closed-loop gate's review leg (read-only).
-5. **`$orchestrate` / `$closed-loop` / `$loop`** skills — delegation, the one definition of "done", and bounded recurring loops.
-
-## Why native-first
-
-The main session **is** the orchestrator. Agents are narrow specialists (`.codex/agents/*.toml`), subagent workflows are the fan-out engine (capped at three threads), and `$loop` is the loop primitive. We do **not** build a parallel framework or a file zoo — see `PLAN.md`.
-
-## Layout
-
-```
-multi-agent-system-architecture-codex/
-├── README.md      ← you are here
-├── CODEX.md       ← Codex-native agents, skill discovery, installer
-├── PLAN.md        ← the accepted architecture plan (source of truth)
-├── BUILD.md       ← phased resume map (Phases A–E = Claude-era history; F+ = Codex)
-├── AGENTS.md      ← repo guidance for Codex
-├── .codex/        ← config.toml + agents/*.toml (planner, governor, builder, reviewer)
-├── skills/        ← orchestrate/, closed-loop/, loop/
-├── .agents/       ← skills/ discovery symlinks into skills/
-├── scripts/       ← install-codex-local.sh, smoke-test-codex.sh, eval-skill-smoke.sh
-├── reference/     ← harness-map.md
-└── .github/       ← validate workflow (TOML, symlinks, contracts, shellcheck)
-```
-
-## How to use
+Open the repository in Codex. Its project agents and skills are discovered locally; personal installation is optional.
 
 ```bash
 cd ~/Projects/multi-agent-system-architecture-codex
 codex
-> Read AGENTS.md, CODEX.md, and BUILD.md before making changes.
 ```
 
-Build is phased and reversible. Each agent/skill is authored **here** first, reviewed, then installed to `~/.codex/...` and `~/.agents/skills/...` via `scripts/install-codex-local.sh` — deployment is deliberate, not automatic.
+Then ask:
 
-### Prerequisites and local verification
+> Read AGENTS.md, CODEX.md, and BUILD.md before making changes.
 
-This repository has no app or dependency-install step. Opening it in Codex is enough to use its project agents and skills; personal installation is optional. Read `AGENTS.md`, `README.md`, `PLAN.md`, `BUILD.md`, and `CODEX.md` before editing, treating the marked Claude-era sections as history. Use a feature branch and preserve unrelated work.
+Use **`$orchestrate`** to plan delegation, **`$closed-loop`** to implement with a verification gate, or **`$loop`** for a bounded recurring check.
+
+## Architecture
+
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/readme/architecture-mobile.svg">
+  <img src="assets/readme/architecture.svg" width="100%" alt="The main session coordinates planning, building and review. Work finishes after checks and review pass; otherwise it is revised within the loop cap. Governor audits on demand and proposes changes for approval. Agents inherit the parent model, with at most three concurrent agent threads.">
+</picture>
+
+| Agent | Responsibility | Working scope |
+| :--- | :--- | :--- |
+| **[planner](.codex/agents/planner.toml)** | A 3–7 phase plan with trade-offs and acceptance criteria | Read-only |
+| **[builder](.codex/agents/builder.toml)** | Focused implementation in isolated parallel work | 1–5 files per task |
+| **[reviewer](.codex/agents/reviewer.toml)** | Independent review for the closed-loop gate | Read-only |
+| **[governor](.codex/agents/governor.toml)** | Audit findings and dated upgrade proposals | Writes proposals only; changes require approval |
+
+The main session is the orchestrator. Agents inherit its model, provider, and reasoning effort; concurrent agent threads are capped at three. Native delegation and the three skills supply the workflow. See [CODEX.md](CODEX.md) for permissions and configuration details.
+
+## Installation
+
+This repository has no application dependency-install step. Interactive use requires Codex CLI; repository checks require Bash, Python **3.11+**, and standard Unix tools.
+
+For an optional personal installation, inspect the installer and preview the four agent copies:
+
+```bash
+scripts/install-codex-local.sh --agents-only
+```
+
+Apply only with explicit approval:
+
+```bash
+scripts/install-codex-local.sh --agents-only --apply
+scripts/smoke-test-codex.sh --live --agents-only
+```
+
+The agents-only mode preserves canonical personal skills. The default full installer also manages skill symlinks and refuses existing skill directories before changing anything. Applied changes have backups and a rollback manifest. [Installation and rollback →](CODEX.md#local-installation-approval-required)
+
+## Verification
+
+Before editing, read `AGENTS.md`, `README.md`, `PLAN.md`, `BUILD.md`, and `CODEX.md`. Use a feature branch and preserve unrelated work. The marked Claude-era sections are historical records.
 
 The repository checks require Bash, Python **3.11+** (`tomllib`), and standard Unix tools. Codex CLI is needed for interactive use; the repository smoke test skips its CLI check when Codex is unavailable. ShellCheck is optional locally and required by CI.
 
@@ -69,17 +85,7 @@ The health command above runs `scripts/smoke-test-codex.sh --repo`; it does not 
 shellcheck -x scripts/install-codex-local.sh scripts/smoke-test-codex.sh scripts/eval-skill-smoke.sh scripts/codex-health.sh
 ```
 
-For an optional personal installation, first inspect `scripts/install-codex-local.sh`. Use `scripts/install-codex-local.sh --agents-only` to preview installing the four agents while preserving your canonical personal skills, then add `--apply` only with explicit approval. Verify that mode with `scripts/smoke-test-codex.sh --live --agents-only`. The default full installer also manages skill symlinks and refuses existing skill directories before making changes. See [CODEX.md](./CODEX.md#local-installation-approval-required) for installation and rollback details.
-
-## Claude-era history
-
-The repo was originally built for Claude Code (`BUILD.md` Phases 1–E, 2026-06-21 → 2026-07-11). Claude Code and Cursor were retired on 2026-09-13; those phases remain documented history, and the Claude-specific files live only in git history.
-
-## Governor cadence
-
-GOVERNOR stays **on-demand** (a cron-like cloud routine cannot reach local BSELA). Habit: before big changes or after a Codex upgrade, run `governor` → review `UPGRADE-PROPOSALS.md` → apply only approved items → `scripts/smoke-test-codex.sh` after any install.
-
-## Health maintenance
+## Maintenance
 
 Run the compact, read-only health check after a Codex update and monthly:
 
@@ -91,6 +97,43 @@ scripts/codex-health.sh --local  # local Codex/config inventories only
 
 It validates config syntax, profiles, the repository contract, and CLI inventories. It does not install or update anything, start MCP servers, or run hooks. `codex doctor` may perform its own redacted provider reachability diagnostic.
 
-## License
+The governor runs **on demand** before substantial changes or after a Codex upgrade. Review its `UPGRADE-PROPOSALS.md`, apply approved items, then run the smoke test after installation. Access to BSELA or other private data requires separate task authorization.
 
-MIT — see [LICENSE](./LICENSE).
+## Documentation
+
+| Read | For |
+| :--- | :--- |
+| [CODEX.md](CODEX.md) | Current agents, permissions, skill discovery, installation, and rollback |
+| [AGENTS.md](AGENTS.md) | Repository working rules |
+| [BUILD.md](BUILD.md#phase-h--canonical-personal-library-compatibility-2026-10-12) | Verified migration and installation record |
+| [PLAN.md](PLAN.md) | Accepted architecture and explicitly marked design history |
+| [Harness map](reference/harness-map.md) | How the native surfaces fit together |
+| [README design](reference/readme-design.md) | Shared visual conventions for the project family |
+| [SECURITY.md](SECURITY.md) | Security boundaries and reporting |
+
+<details>
+<summary>Repository layout</summary>
+
+```text
+.codex/agents/   Four canonical agent definitions
+.codex/config.toml
+skills/          orchestrate · closed-loop · loop
+.agents/skills/  Repository skill-discovery symlinks
+scripts/         Installer, smoke tests, and health checks
+reference/       Architecture and design references
+assets/readme/   Static README artwork
+.github/         Repository validation workflow
+```
+
+</details>
+
+<details>
+<summary>Migration history</summary>
+
+The Codex-native rebuild was completed on 2026-09-13. Claude Code and Cursor were retired on that date. Earlier build phases remain in `BUILD.md`, and the removed files remain in Git history. Current installation acceptance is recorded in Phase H.
+
+</details>
+
+---
+
+<img src="assets/readme/dot.svg" width="12" height="12" alt=""> **BLACK.TERMINAL** · [MIT License](LICENSE) · [GitHub](https://github.com/subkoks)
