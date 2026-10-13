@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="586" viewBox="0 0 360 586" role="img" aria-labelledby="title">
+<title id="title">Main session coordinates planner, builder and reviewer. Governor proposes approved upgrades on demand.</title>
+<rect width="360" height="586" rx="8" fill="#111110"/>
+<text x="24" y="34" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" letter-spacing="1">THE MAIN SESSION COORDINATES</text>
+<rect x="24" y="64" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="42" y="93" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >01 / PLAN</text>
+<text x="42" y="117" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >planner · read-only</text>
+<rect x="24" y="166" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="42" y="195" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >02 / BUILD</text>
+<text x="42" y="219" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >builder · scoped changes</text>
+<rect x="24" y="268" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="42" y="297" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >03 / REVIEW</text>
+<text x="42" y="321" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >reviewer · read-only</text>
+<path d="M180 136v30m-4-6 4 6 4-6M180 238v30m-4-6 4 6 4-6" fill="none" stroke="#FF7F0E"/>
+<text x="24" y="374" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Pass the checks and review.</text>
+<text x="24" y="398" fill="#B5B0A8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Otherwise revise within the loop cap.</text>
+<text x="24" y="458" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" >04 / GOVERNOR</text>
+<text x="24" y="485" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >On-demand audit → upgrade proposals.</text>
+<text x="24" y="510" fill="#B5B0A8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Changes require approval.</text>
+<text x="24" y="549" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" >PARENT MODEL · 3-THREAD CAP</text>
+<path d="M24 426H336" stroke="#393632"/>
+</svg>

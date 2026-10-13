@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="400" viewBox="0 0 960 400" role="img" aria-labelledby="title">
+<title id="title">Main session coordinates planner, builder and reviewer. Governor proposes approved upgrades on demand.</title>
+<rect width="960" height="400" rx="8" fill="#111110"/>
+<text x="24" y="34" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" letter-spacing="1">THE MAIN SESSION COORDINATES</text>
+<rect x="32" y="80" width="272" height="92" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="50" y="109" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >01 / PLAN</text>
+<text x="50" y="133" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >planner · read-only</text>
+<rect x="344" y="80" width="272" height="92" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="362" y="109" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >02 / BUILD</text>
+<text x="362" y="133" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >builder · scoped changes</text>
+<rect x="656" y="80" width="272" height="92" rx="4" fill="#1B1A18" stroke="#393632"/>
+<text x="674" y="109" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >03 / REVIEW</text>
+<text x="674" y="133" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >reviewer · read-only</text>
+<path d="M304 126h40m-6-4 6 4-6 4M616 126h40m-6-4 6 4-6 4" fill="none" stroke="#FF7F0E" stroke-width="1.5"/>
+<text x="32" y="214" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="400" >Pass checks + review to finish. Otherwise revise within the loop cap.</text>
+<text x="32" y="280" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" >04 / GOVERNOR</text>
+<text x="260" y="280" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" font-weight="400" >On-demand audit → upgrade proposals → approval</text>
+<text x="32" y="352" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >INHERIT THE PARENT MODEL</text>
+<text x="928" y="352" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" text-anchor="end">MAX. 3 CONCURRENT AGENT THREADS</text>
+<path d="M24 244H936" stroke="#393632"/>
+</svg>
