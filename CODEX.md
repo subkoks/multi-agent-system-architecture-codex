@@ -2,7 +2,7 @@
 
 How this repo maps into Codex CLI, the IDE extension, and the ChatGPT desktop app.
 
-**Status:** Codex-native rebuild (`feat/codex-native-rebuild`). Codex is the canonical runtime. Claude Code and Cursor were retired on 2026-09-13; their files live only in git history and `BUILD.md` Phases 1–E.
+**Status:** Canonical — Codex is the only active runtime (the Codex-native rebuild completed 2026-09-13). Claude Code and Cursor were retired the same day; their files live only in git history and `BUILD.md` Phases 1–E.
 
 ## Canonical files vs adapters
 
