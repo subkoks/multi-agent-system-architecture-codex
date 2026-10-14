@@ -186,7 +186,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done. Historical checkmarks are
 - [x] F2. **Codex-aware workflows** — Codex routing + write-isolation notes in `/orchestrate`; `reviewer` adapter leg, repo-first gate commands, no `npx --yes` in `/closed-loop`; expiry/stop rule in `/loop`; delegation + thread-cap rules in `AGENTS.md`.
 - [x] F3. **Installer + validation** — `scripts/install-codex-local.sh` (dry-run default, managed allowlist, backups, rollback manifest), `scripts/smoke-test-codex.sh` (`--repo`/`--live`), CI TOML/symlink/schema checks + installer dry-run, `SECURITY.md` notes. Apply/rollback proven against a fake `HOME`.
 - [x] F4. **Docs** — `CODEX.md`; README, PLAN, CLAUDE, CURSOR, harness-map reconciled.
-- [ ] F5. **Historical local-install proposal — superseded by Phase H.** The original installer/editor steps were not executed; use the current Codex-only procedure below.
+- [x] F5. **Historical local-install proposal — closed as superseded by Phase H.** The original installer/editor steps were not executed; the current Codex-only procedure below replaced them (verified in Phase H).
 
 Deploy note (historical): the `~/.claude` drift and `scripts/deploy-to-claude-and-cursor.sh` referenced here were retired in Phase G; the current Codex deploy path is `scripts/install-codex-local.sh` (see `CODEX.md`).
 
@@ -216,6 +216,19 @@ Deploy note (historical): the `~/.claude` drift and `scripts/deploy-to-claude-an
 - [x] H5. **Fresh CLI acceptance (2026-10-12)** — outside this repository, a new Sol/medium session exposed all four global custom roles and successfully spawned the custom reviewer, which returned its installed role instruction. Installed roles and global subagent defaults contain no model/effort overrides. No child file/tool work was requested. This verifies CLI discovery and a reviewer invocation; IDE/Desktop reload and invocation of every other role remain untested.
 
 See `CODEX.md` for the current installation and rollback procedure.
+
+---
+
+## Phase I — Codex-era refresh & reinstall (2026-10-14, PR #21)
+
+**Trigger:** owner confirmed Codex as the only runtime and asked for updates, config rebuild, and install.
+
+- [x] I1. **Operational guidance refreshed** — BUILD resume/pre-flight blocks replaced with a Codex-era session start; F deploy note marked historical; guardrails point at the Codex installer; `CODEX.md` status updated; issue-template scope now names `~/.codex/agents` / skill mirrors.
+- [x] I2. **Config validated, no drift** — `.codex/config.toml` and the four agent TOMLs pass `codex --strict-config` on CLI 0.162.1; gate suite green (`eval-skill-smoke.sh`, `smoke-test-codex.sh --repo`, `codex-health.sh --repo`, offline regression checks).
+- [x] I3. **Reinstall applied** — `scripts/install-codex-local.sh --agents-only --apply`; manifest `install-20261014T040844-36607`; `smoke-test-codex.sh --live --agents-only` green.
+- [x] I4. **Review leg** — independent reviewer PASS (no Critical/Major); in-session subagent task delivery failed and the nested `codex review` CLI could not authenticate, so the reviewer self-directed a read-only verification pass.
+
+**Gated, not executed:** `~/.claude/` removal (Hard Stop — exact-target approval); global `~/.codex/config.toml` changes (outside this repo's scope).
 
 ---
 
