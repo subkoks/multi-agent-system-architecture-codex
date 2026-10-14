@@ -1,6 +1,6 @@
 ---
 name: Upgrade proposal
-about: Propose a system upgrade for GOVERNOR / Phase E review (never auto-applied)
+about: Propose a system upgrade for a GOVERNOR audit (never auto-applied)
 title: "[upgrade] "
 labels: enhancement
 ---
@@ -11,13 +11,13 @@ labels: enhancement
 
 ## Why
 
-<!-- Pain, drift, new CC feature, BSELA lesson, etc. -->
+<!-- Pain, drift, new Codex feature, BSELA lesson, etc. -->
 
 ## Scope
 
 - [ ] Repo agents/skills only (this repo)
-- [ ] Live `~/.claude/` (owner deploy after review)
-- [ ] Governance (`AGENTS.md` / settings.json) — **Hard Stop, owner only**
+- [ ] Live install surfaces (`~/.codex/agents`, skill mirrors) — owner deploy after review (`scripts/install-codex-local.sh --apply`)
+- [ ] Governance (`~/AGENTS.md` / mirrors outside this repo) — **Hard Stop, owner only**
 
 ## Verify
 

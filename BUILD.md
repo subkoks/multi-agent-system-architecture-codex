@@ -1,15 +1,13 @@
-# BUILD — resume map
+# BUILD — build & migration record
 
-Next session: read this top-to-bottom, then execute Phase 1. Author every file **here** (in this repo) first; deploy to `~/.claude/...` only at the explicit deploy step of each phase. Work on a feature branch, not `main`.
+Phase-by-phase record for the multi-agent system. Start with `AGENTS.md` (working rules) and `CODEX.md` (Codex surfaces, installation, rollback) before editing. Phases 1–4, C, D, and E below are the **Claude-era record (history only)**; Phases F–H are the **Codex-era record**. Codex is the canonical runtime.
 
-Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
+## Session start (Codex era)
+- Work on a feature branch, not `main`; one logical change per commit.
+- Validate with the README "Verification" commands (`scripts/eval-skill-smoke.sh`, `scripts/smoke-test-codex.sh --repo`, `scripts/codex-health.sh --repo`, `git diff --check`); CI runs the full `validate` workflow.
+- Deploy only on explicit request: `scripts/install-codex-local.sh [--agents-only] --apply`, then verify with `scripts/smoke-test-codex.sh --live [--agents-only]`.
 
----
-
-## Pre-flight (every session)
-- [x] `cd ~/Projects/multi-agent-system-architecture-claude-cli` and confirm on a feature branch.
-- [x] Re-read `PLAN.md` §3–§7 (architecture, roster, loops, anti-patterns).
-- [x] Verify nothing in `~/.claude/` was changed since last session (`ls -la ~/.claude/agents ~/.claude/skills`).
+Legend: `[ ]` todo · `[~]` in progress · `[x]` done. Historical checkmarks are preserved.
 
 ---
 
@@ -190,7 +188,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 - [x] F4. **Docs** — `CODEX.md`; README, PLAN, CLAUDE, CURSOR, harness-map reconciled.
 - [ ] F5. **Historical local-install proposal — superseded by Phase H.** The original installer/editor steps were not executed; use the current Codex-only procedure below.
 
-Deploy note: the F2 skill edits drift vs `~/.claude` until `scripts/deploy-to-claude-and-cursor.sh` next runs (that deploy is outside rebuild scope).
+Deploy note (historical): the `~/.claude` drift and `scripts/deploy-to-claude-and-cursor.sh` referenced here were retired in Phase G; the current Codex deploy path is `scripts/install-codex-local.sh` (see `CODEX.md`).
 
 **Verify:** `scripts/eval-skill-smoke.sh`, `scripts/smoke-test-codex.sh --repo`, `scripts/install-codex-local.sh` (dry-run), `git diff --check`, CI validate green.
 
@@ -222,7 +220,7 @@ See `CODEX.md` for the current installation and rollback procedure.
 ---
 
 ## Guardrails (apply to all phases)
-- Governance files (`~/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.claude/settings.json`) change **only** via reviewed proposal — Hard Stop.
+- Governance and mirror files outside this repo (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors) change **only** via reviewed proposal — Hard Stop.
 - No unbounded loops: every loop has an eval gate or a budget/turn cap.
-- Author-here → review → deploy. Never auto-deploy into `~/.claude/`.
+- Author-here → review → deploy. Deploy only on explicit request via `scripts/install-codex-local.sh --apply`; nothing auto-deploys into `~/.codex/`.
 - Keep the roster small. New agent only if it reduces friction more than it adds maintenance.
