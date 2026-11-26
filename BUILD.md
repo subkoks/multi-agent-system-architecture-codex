@@ -224,13 +224,23 @@ See `CODEX.md` for the current installation and rollback procedure.
 **Trigger:** owner confirmed Codex as the only runtime and asked for updates, config rebuild, and install.
 
 - [x] I1. **Operational guidance refreshed** — BUILD resume/pre-flight blocks replaced with a Codex-era session start; F deploy note marked historical; guardrails point at the Codex installer; `CODEX.md` status updated; issue-template scope now names `~/.codex/agents` / skill mirrors.
-- [x] I2. **Config validated, no drift** — `.codex/config.toml` and the four agent TOMLs pass `codex --strict-config` on CLI 0.162.1; gate suite green (`eval-skill-smoke.sh`, `smoke-test-codex.sh --repo`, `codex-health.sh --repo`, offline regression checks).
+- [x] I2. **Config validated, no drift** — `.codex/config.toml` and the four agent TOMLs passed the checks used with CLI 0.162.1. Phase J established that the old launcher check short-circuited config loading. The remaining gates were green (`eval-skill-smoke.sh`, `smoke-test-codex.sh --repo`, `codex-health.sh --repo`, offline regression checks).
 - [x] I3. **Reinstall applied** — `scripts/install-codex-local.sh --agents-only --apply`; manifest `install-20261014T040844-36607`; `smoke-test-codex.sh --live --agents-only` green.
 - [x] I4. **Review leg** — independent reviewer PASS (no Critical/Major); in-session subagent task delivery failed and the nested `codex review` CLI could not authenticate, so the reviewer self-directed a read-only verification pass.
 
 **Gated, not executed:** `~/.claude/` removal (Hard Stop — exact-target approval); global `~/.codex/config.toml` changes (outside this repo's scope).
 
 ---
+
+## Phase J — Codex architecture refresh (2026-11-26)
+
+- Extended the canonical roster with the documentation researcher and read-only repository operator. Kept delegation with the main session and removed unsupported role-level permission settings after checking tagged Codex source.
+- Added a disposable native startup-config probe with a negative control, kept the offline installer and skill checks, and corrected local health reporting for profile inventory.
+- Expanded installer coverage to six roles. Rollback now validates all recorded destinations and backup locations before applying rows, including the original backup layout.
+- Preserved GitHub's required `validate` job, pinned checkout and limited permissions. Added PR cancellation, a job timeout, runner-bundled ShellCheck and a pull request template for review and rollback evidence.
+- Refreshed project guidance, the BLACK.TERMINAL artwork, the README title and discovery metadata. Documented explicit model trials, public Docs MCP use and scoped BSELA integration.
+
+See the [refresh plan](PLAN.md) and [verification commands](README.md#verification). The project-native configuration was exercised with Codex CLI 0.171.0. Upstream 0.172.0 was assessed through its release and tagged source. Personal installation, live provider usage and hosted checks for this branch are separate acceptance steps.
 
 ## Guardrails (apply to all phases)
 - Governance and mirror files outside this repo (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors) change **only** via reviewed proposal — Hard Stop.

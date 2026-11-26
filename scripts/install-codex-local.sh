@@ -2,7 +2,7 @@
 # Codex-native local installer: repo -> personal Codex surfaces.
 #
 # Managed assets (nothing else is touched):
-#   ~/.codex/agents/{planner,governor,builder,reviewer}.toml   <- copy of .codex/agents/*.toml
+#   ~/.codex/agents/<managed role>.toml  <- copy of that role from .codex/agents/
 #   ~/.codex/skills/{orchestrate,closed-loop,loop}             -> $REPO/skills/*  (symlink)
 #   ~/.agents/skills/{orchestrate,closed-loop,loop}            -> $REPO/skills/*  (symlink)
 #
@@ -31,7 +31,7 @@ CODEX_SKILL_DST="${HOME}/.codex/skills"
 AGENTS_SKILL_DST="${HOME}/.agents/skills"
 MANIFEST_DIR="${HOME}/.codex/install-manifests"
 
-ALLOW_AGENTS=(planner governor builder reviewer)
+ALLOW_AGENTS=(planner governor builder reviewer docs-researcher repo-operator)
 ALLOW_SKILLS=(orchestrate closed-loop loop)
 
 ACTION="dry-run"
@@ -76,15 +76,21 @@ manifest_add() {
 
 ensure_parent() {
   local dir="$1"
-  if [[ ( -e "$dir" || -L "$dir" ) && ! -d "$dir" ]]; then
-    refuse "$dir exists but is not a directory"
+  if [[ -L "$dir" || ( -e "$dir" && ! -d "$dir" ) ]]; then
+    refuse "$dir must be a directory and not a symlink"
   fi
+}
+
+# Append a sentinel so command substitution preserves the target's trailing newlines.
+read_link_with_sentinel() {
+  readlink -n "$1" && printf '.'
 }
 
 # Validate every selected destination before creating even the manifest. A late
 # skill collision must not leave earlier agents or links partially installed.
 preflight() {
   local name dst
+  [[ "$HOME" != *"|"* && "$HOME" != *$'\n'* ]] || refuse "HOME cannot be represented in a rollback manifest"
   ensure_parent "${HOME}/.codex"
   ensure_parent "${AGENT_DST}"
   ensure_parent "${MANIFEST_DIR}"
@@ -105,7 +111,13 @@ preflight() {
     for name in "${ALLOW_SKILLS[@]}"; do
       [[ -f "${SKILL_SRC}/${name}/SKILL.md" ]] || refuse "skill source missing: ${SKILL_SRC}/${name}/SKILL.md"
       for dst in "${CODEX_SKILL_DST}/${name}" "${AGENTS_SKILL_DST}/${name}"; do
-        if [[ ( -e "$dst" || -L "$dst" ) && ! -L "$dst" ]]; then
+        if [[ -L "$dst" ]]; then
+          local old_target
+          old_target="$(read_link_with_sentinel "$dst")"
+          old_target="${old_target%.}"
+          [[ "$old_target" != *"|"* && "$old_target" != *$'\n'* ]] ||
+            refuse "link target cannot be represented in a rollback manifest: $dst"
+        elif [[ -e "$dst" ]]; then
           refuse "unknown collision at $dst — expected a symlink, found something else"
         fi
       done
@@ -126,7 +138,10 @@ install_agent() {
     elif [[ -f "$dst" ]]; then
       backup="${BACKUP_DIR}/${name}.toml"
       plan "backup $dst -> $backup"
-      [[ "$ACTION" == "apply" ]] && cp "$dst" "$backup" && manifest_add FILE "$dst" "$backup"
+      if [[ "$ACTION" == "apply" ]]; then
+        cp "$dst" "$backup"
+        manifest_add FILE "$dst" "$backup"
+      fi
     else
       refuse "unknown collision at $dst"
     fi
@@ -134,8 +149,8 @@ install_agent() {
   plan "install agent: copy $src -> $dst"
   if [[ "$ACTION" == "apply" ]]; then
     mkdir -p "${AGENT_DST}"
-    cp "$src" "$dst"
     if [[ -z "$backup" ]]; then manifest_add NEW "$dst" file; fi
+    cp "$src" "$dst"
   fi
 }
 
@@ -149,7 +164,8 @@ install_skill_link() {
   if [[ -e "$dst" || -L "$dst" ]]; then
     if [[ -L "$dst" ]]; then
       local old
-      old="$(readlink "$dst")"
+      old="$(read_link_with_sentinel "$dst")"
+      old="${old%.}"
       if [[ "$old" == "$src" ]]; then
         note "already correct: $dst -> $src"
         return
@@ -166,27 +182,91 @@ install_skill_link() {
     plan "create symlink $dst -> $src"
     if [[ "$ACTION" == "apply" ]]; then
       mkdir -p "$dst_dir"
-      ln -s "$src" "$dst"
       manifest_add NEW "$dst" link
+      ln -s "$src" "$dst"
     fi
   fi
 }
 
 rollback() {
-  local m="$1"
-  [[ -f "$m" ]] || refuse "rollback manifest not found: $m"
-  while IFS='|' read -r type path a; do
-    [[ -n "$type" ]] || continue
-    case "$type" in
+  local m="$1" stem type path value name kind row seen="|"
+  local -a types=() destinations=() values=()
+  [[ -f "$m" && ! -L "$m" ]] || refuse "rollback manifest must be a regular file: $m"
+  stem="${m##*/}"
+  [[ "$stem" =~ ^install-[0-9]{8}T[0-9]{6}(-[0-9]+)?\.manifest$ ]] ||
+    refuse "unrecognized rollback manifest name: $stem"
+  stem="${stem%.manifest}"
+
+  ensure_parent "${HOME}/.codex"
+  ensure_parent "${HOME}/.agents"
+  ensure_parent "${AGENT_DST}"
+  ensure_parent "${MANIFEST_DIR}"
+  ensure_parent "${HOME}/.agents/backups"
+
+  # Check every row before making any changes, then use only the verified rows.
+  while IFS= read -r row || [[ -n "$row" ]]; do
+    [[ "$row" == *"|"*"|"* && "$row" != *"|"*"|"*"|"* ]] ||
+      refuse "malformed rollback manifest row"
+    IFS='|' read -r type path value <<< "$row"
+    [[ "$seen" != *"|${path}|"* ]] || refuse "duplicate rollback destination: $path"
+    seen+="${path}|"
+
+    kind=""
+    for name in "${ALLOW_AGENTS[@]}"; do
+      if [[ "$path" == "${AGENT_DST}/${name}.toml" ]]; then
+        kind="file"
+        break
+      fi
+    done
+    if [[ -z "$kind" ]]; then
+      for name in "${ALLOW_SKILLS[@]}"; do
+        if [[ "$path" == "${CODEX_SKILL_DST}/${name}" || "$path" == "${AGENTS_SKILL_DST}/${name}" ]]; then
+          kind="link"
+          break
+        fi
+      done
+    fi
+    [[ -n "$kind" ]] || refuse "unmanaged rollback destination: $path"
+    ensure_parent "${path%/*}"
+    if [[ "$kind" == file ]]; then
+      [[ ! -L "$path" && ( ! -e "$path" || -f "$path" ) ]] || refuse "agent path changed type: $path"
+    else
+      [[ ! -e "$path" || -L "$path" ]] || refuse "skill path changed type: $path"
+    fi
+
+    case "$type:$kind" in
+      FILE:file)
+        local backup_dir="${HOME}/.agents/backups/codex-native-${stem}"
+        local legacy_dir="${MANIFEST_DIR}/${stem}.backup"
+        [[ "$value" == "${backup_dir}/${name}.toml" || "$value" == "${legacy_dir}/${name}.toml" ]] ||
+          refuse "unrecognized backup path for $path"
+        ensure_parent "${value%/*}"
+        [[ -f "$value" && ! -L "$value" ]] || refuse "backup missing for $path: $value"
+        ;;
+      SYMLINK:link) [[ -n "$value" ]] || refuse "missing previous link target for $path" ;;
+      NEW:*) [[ "$value" == "$kind" ]] || refuse "invalid installed path type for $path" ;;
+      *) refuse "malformed rollback record for $path" ;;
+    esac
+    types+=("$type")
+    destinations+=("$path")
+    values+=("$value")
+  done < "$m"
+  [[ "$seen" != "|" ]] || refuse "rollback manifest is empty"
+
+  local i
+  for ((i = 0; i < ${#types[@]}; i++)); do
+    path="${destinations[i]}"
+    value="${values[i]}"
+    case "${types[i]}" in
       FILE)
-        if [[ ! -f "$a" ]]; then refuse "backup missing for $path: $a"; fi
-        doit "restore $path from $a"
-        mkdir -p "$(dirname "$path")"
-        cp "$a" "$path"
+        doit "restore $path from $value"
+        mkdir -p "${path%/*}"
+        cp "$value" "$path"
         ;;
       SYMLINK)
-        doit "restore symlink $path -> $a"
-        ln -sfn "$a" "$path"
+        doit "restore symlink $path -> $value"
+        mkdir -p "${path%/*}"
+        ln -sfn -- "$value" "$path"
         ;;
       NEW)
         if [[ -L "$path" || -f "$path" ]]; then
@@ -194,9 +274,8 @@ rollback() {
           rm -- "$path"
         fi
         ;;
-      *) refuse "malformed manifest line: ${type} ${path} ${a}" ;;
     esac
-  done < "$m"
+  done
   printf '[DONE] Rollback complete from %s\n' "$m"
 }
 

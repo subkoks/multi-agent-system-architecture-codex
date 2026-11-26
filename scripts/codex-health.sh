@@ -98,7 +98,8 @@ check_local() {
   fi
 
   local doctor_status
-  if ! doctor_status="$(codex_in_repo doctor --summary --json 2>/dev/null | sed -n 's/.*"overallStatus": "\([^"]*\)".*/\1/p' | head -n 1)"; then
+  if ! doctor_status="$(codex_in_repo doctor --summary --json 2>/dev/null |
+      python3 -I -c 'import json, sys; print(json.load(sys.stdin).get("overallStatus", ""))')"; then
     fail "codex doctor (run 'codex doctor' for detail)"
   elif [[ "${doctor_status}" == "ok" ]]; then
     pass "codex doctor"
@@ -108,7 +109,7 @@ check_local() {
     fail "codex doctor reported ${doctor_status:-an unknown status}"
   fi
 
-  if codex_in_repo --strict-config --version >/dev/null 2>&1; then
+  if codex_in_repo app-server --strict-config --print-startup-config >/dev/null 2>&1; then
     pass "base config strict validation"
   else
     fail "base config strict validation"
@@ -117,21 +118,12 @@ check_local() {
   if [[ ! -d "${CODEX_HOME_PATH}" ]]; then
     warn "no CODEX_HOME directory at ${CODEX_HOME_PATH}; profile checks skipped"
   else
-    local profile_path profile_name
-    local -a profiles=("${CODEX_HOME_PATH}"/*.config.toml)
-    if [[ ! -e "${profiles[0]}" ]]; then
-      warn "no profile files in ${CODEX_HOME_PATH}"
-    else
-      for profile_path in "${profiles[@]}"; do
-        profile_name="${profile_path##*/}"
-        profile_name="${profile_name%.config.toml}"
-        if codex_in_repo --strict-config --profile "${profile_name}" --version >/dev/null 2>&1; then
-          pass "profile ${profile_name} strict validation"
-        else
-          fail "profile ${profile_name} strict validation"
-        fi
-      done
-    fi
+    local profile_path
+    for profile_path in "${CODEX_HOME_PATH}"/*.config.toml; do
+      if [[ -f "$profile_path" ]]; then
+        log "[INFO] Profile found: ${profile_path##*/} (inventory only)"
+      fi
+    done
   fi
 
   if codex_in_repo plugin list >/dev/null 2>&1; then

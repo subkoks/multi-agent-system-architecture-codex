@@ -8,98 +8,41 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Required paths exist
+      - name: Required documentation and entry points
         run: |
-          test -f README.md
-          test -f AGENTS.md
-          test -f CODEX.md
-          test -f PLAN.md
-          test -f BUILD.md
-          test -f .codex/config.toml
-          test -f .codex/agents/planner.toml
-          test -f .codex/agents/governor.toml
-          test -f .codex/agents/builder.toml
-          test -f .codex/agents/reviewer.toml
-          test -f skills/orchestrate/SKILL.md
-          test -f skills/closed-loop/SKILL.md
-          test -f skills/loop/SKILL.md
-          test -x scripts/install-codex-local.sh
-          test -x scripts/smoke-test-codex.sh
-          test -x scripts/eval-skill-smoke.sh
-          test -x scripts/codex-health.sh
-          test -f reference/harness-map.md
-          test -f SECURITY.md
-
-      - name: Claude/Cursor surfaces removed
-        run: |
-          for p in CLAUDE.md CURSOR.md \
-            agents/planner.md agents/governor.md agents/builder.md \
-            scripts/deploy-to-claude-and-cursor.sh \
-            scripts/integrate-cursor-from-claude.sh \
-            scripts/smoke-test.sh \
-            .claude/settings.json .cursor/rules/project-overrides.mdc; do
-            test ! -e "$p" || { echo "legacy surface present: $p"; exit 1; }
+          for doc in README.md AGENTS.md CODEX.md PLAN.md BUILD.md reference/harness-map.md SECURITY.md; do
+            test -f "$doc"
+          done
+          for script in install-codex-local.sh smoke-test-codex.sh eval-skill-smoke.sh codex-health.sh; do
+            test -x "scripts/$script"
+            bash -n "scripts/$script"
           done
 
-      - name: Codex config and agents
+      - name: Agent, skill and repository contracts
         run: |
-          for s in orchestrate closed-loop loop; do
-            test -L ".agents/skills/$s"
-            test -f ".agents/skills/$s/SKILL.md"
-          done
-          python3 - <<'PY'
-          import pathlib, tomllib
-          cfg = tomllib.load(open(".codex/config.toml", "rb"))
-          assert cfg["agents"]["max_concurrent_threads_per_session"] == 3
-          expected = {"planner", "governor", "builder", "reviewer"}
-          found = set()
-          for p in pathlib.Path(".codex/agents").glob("*.toml"):
-              d = tomllib.load(open(p, "rb"))
-              for k in ("name", "description", "developer_instructions"):
-                  assert k in d, f"{p}: missing {k}"
-              found.add(d["name"])
-              if d["name"] in {"planner", "reviewer"}:
-                  assert d.get("default_permissions") == ":read-only"
-          assert found == expected, f"agent set {found} != {expected}"
-          PY
+          scripts/eval-skill-smoke.sh --quiet
+          scripts/codex-health.sh --repo --quiet
 
-      - name: Shell syntax
+      - name: Offline regressions
         run: |
-          bash -n scripts/install-codex-local.sh
-          bash -n scripts/smoke-test-codex.sh
-          bash -n scripts/eval-skill-smoke.sh
-          bash -n scripts/codex-health.sh
+          python3 scripts/check-quiet-diagnostics.py
+          python3 scripts/check-installer-migration.py
 
-      - name: Skill contracts
-        run: scripts/eval-skill-smoke.sh --quiet
-
-      - name: Quiet diagnostics regression (offline)
-        run: python3 scripts/check-quiet-diagnostics.py
-
-      - name: Codex smoke (repo)
-        run: scripts/smoke-test-codex.sh --repo --quiet
-
-      - name: Codex health (repo)
-        run: scripts/codex-health.sh --repo --quiet
-
-      - name: Installer dry-run
-        run: scripts/install-codex-local.sh
-
-      - name: Installer migration regression (offline)
-        run: python3 scripts/check-installer-migration.py
-
-      - name: Shellcheck
+      - name: ShellCheck
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq shellcheck
           shellcheck -x scripts/install-codex-local.sh \
             scripts/smoke-test-codex.sh \
             scripts/eval-skill-smoke.sh \

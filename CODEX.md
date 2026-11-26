@@ -1,75 +1,73 @@
-# Codex-native authoring and installation
+# Codex configuration and operations
 
-How this repo maps into Codex CLI, the IDE extension, and the ChatGPT desktop app.
+Codex CLI, the IDE extension and the desktop app use the repository's native agent and skill layout. Open a trusted checkout to adopt the project settings. Use the [optional personal installer](#local-installation-approval-required) to make the roles available elsewhere.
 
-**Status:** Canonical — Codex is the only active runtime (the Codex-native rebuild completed 2026-09-13). Claude Code and Cursor were retired the same day; their files live only in git history and `BUILD.md` Phases 1–E.
+## Canonical files and discovery
 
-## Canonical files vs adapters
+| Surface | Repository source | Purpose |
+| --- | --- | --- |
+| Project configuration | [`.codex/config.toml`](.codex/config.toml) | Permissions, approvals, search mode and child-thread cap |
+| Custom agents | [`.codex/agents/`](.codex/agents/) | Six specialist role definitions |
+| Skills | [`skills/`](skills/) · [`.agents/skills/`](.agents/skills/) | Workflow sources and project discovery links |
+| Local verification | [`scripts/`](scripts/) | Offline contract checks, isolated CLI startup probe and personal install checks |
 
-| Asset | Canonical source | Codex surface |
-|---|---|---|
-| Agents | `.codex/agents/*.toml` (canonical: planner, governor, builder, reviewer) | installed copies in `~/.codex/agents/` |
-| Skills | `skills/*/SKILL.md` | `.agents/skills/*` discovery symlinks (orchestrate, closed-loop, loop) |
-| Policy | `AGENTS.md` | `.codex/config.toml` (permission profile, approvals, thread cap) |
+The main session delegates directly, serializes dependent work and assigns disjoint files or worktrees to parallel writers. Three open child threads is the maximum. Children return their evidence to the main session.
 
-Edit the TOML agents directly — they are the source of truth now.
+## Agent scopes and permissions
 
-## Agents
+| Role | Assigned scope |
+| --- | --- |
+| `planner` | Read the project and return a phased plan. |
+| `builder` | Write only the files named in the assignment and run the specified checks. |
+| `reviewer` | Review the current diff and report a verdict and verification gaps. |
+| `docs-researcher` | Use existing docs and web tools for public, cited research. |
+| `repo-operator` | Read GitHub evidence for the specified repository and refs. |
+| `governor` | Audit the system and return proposals, or append to `UPGRADE-PROPOSALS.md` when allowed to write. |
 
-| Agent | Permission default | Role |
-|---|---|---|
-| planner | `:read-only` | 3–7 phase plans; never edits |
-| governor | `:workspace` | one audit pass; writes ONLY `UPGRADE-PROPOSALS.md` |
-| builder | `:workspace` | scoped implementer (1–5 files); max 3 gate retries |
-| reviewer | `:read-only` | one review pass; PASS = no Critical/Major |
+The project requests workspace permissions and human review for approvals. It uses non-login shells by default. Supply toolchain paths in the launch environment when your tools normally depend on login-shell startup.
 
-Model, provider, and reasoning effort are inherited from the parent session — no role-specific or project model pins (locked decision). Choose a current model in the user profile or launch command; do not copy old model IDs from the historical PLAN/BUILD sections. Verified on 2026-10-11 with CLI 0.162.1: the installed OpenAI catalog includes `gpt-6.1-sol` and `gpt-6-astra`; the user's normal default is Sol/medium, with Astra/high selected via `codex -p astra`. Availability is provider/account-specific; inheritance also preserves an explicitly selected alternative provider.
+Agent instructions define the assigned scope. Effective sandboxing and approvals follow the parent turn, including explicit launch and live changes. Use the parent's permission controls before delegation if the task requires enforced read-only access. Narrow role instructions and feature flags reduce scope but cannot guarantee that every inherited tool is disabled. The researcher disables shell use. Planner, reviewer, researcher and operator opt out of memories, permission-request tooling and automatic skill instructions. [Permissions](https://learn.chatgpt.com/docs/permissions) · [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
 
-The governor checks current official documentation and the installed provider catalog before recommending model changes. BSELA/private-data access requires its own task authorization; unavailable evidence is reported explicitly.
+## Models, tools and usage
 
-## Permissions
+The repository leaves model, provider, reasoning effort and speed tier to the selected session. Keep the same provider throughout delegated work. Check the model picker or provider catalog before requesting an override. A user profile or explicit request can supply a different child model or effort.
 
-The project explicitly selects `default_permissions = ":workspace"`, `approval_policy = "on-request"`, and `approvals_reviewer = "user"`. This prevents an ordinary launch from inheriting the user's global Full Access/automatic-review defaults. Built-in workspace permissions protect `.git` and `.codex`; necessary writes there may require approval. No machine-specific custom permission profile is required.
+| Task | Starting choice when supported |
+| --- | --- |
+| Routine implementation and review | GPT-6.2 Sol at medium reasoning, inherited by default |
+| Narrow evidence collection | GPT-6 Luna at high reasoning, explicitly selected for a scoped scan |
+| Architecture and high-risk review | GPT-6.2 Astra at high reasoning when the extra depth is warranted |
 
-Agents use `default_permissions` rather than legacy `sandbox_mode`, because the two permission systems do not compose. Agent roles and output-file limits are behavioral instructions, not filesystem allowlists. Explicit CLI and live parent permission overrides can take precedence when spawning agents; inspect `/status` and `/permissions` in a fresh session rather than treating an agent file as a security boundary. See [permission profiles](https://learn.chatgpt.com/docs/permissions) and [subagent inheritance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+Use standard speed for routine work. Prefer one targeted child over a broad fan-out and give it exact paths, questions and output limits. Keep expensive review focused on decisions the cheaper evidence pass could leave unresolved. Evaluate model changes with the same task, commit, gates and speed tier. Compare elapsed time, available token or credit usage, and rework required to reach the gate. Record unavailable usage explicitly. With non-interactive JSON output, check which turns and child usage are included before comparing totals. [OpenAI models](https://learn.chatgpt.com/docs/models) · [Codex pricing](https://learn.chatgpt.com/docs/pricing)
 
-## Skills
-
-Repo-root `.agents/skills/*` symlinks make the three workflow skills discoverable from any CWD in this repo. Progressive disclosure applies: the full `SKILL.md` loads only when the skill is selected.
-
-## Thread cap
-
-`.codex/config.toml` sets `agents.max_concurrent_threads_per_session = 3`.
-
-## Usage
+Cached web search is the project default. Use `codex --search` on a research session that needs current sources. For OpenAI-specific research, use the OpenAI Developers plugin's documentation workflow when available, or configure the public, read-only Docs MCP for a single CLI launch:
 
 ```bash
-cd ~/Projects/multi-agent-system-architecture-codex
-codex
-> spawn planner to plan …          # custom agents via .codex/agents/*.toml
-> use reviewer to gate the diff    # closed-loop review leg
-> $orchestrate …                   # repo skills via $ or /skills
+codex --search -c 'mcp_servers.openaiDeveloperDocs={url="https://developers.openai.com/mcp"}'
 ```
 
-The IDE extension and the desktop app pick up the same project config, agents, and skills when this repo folder is open. This is a documentation-only repo — there is no app to bootstrap, so opening the repo in Codex is the whole setup.
+Use official pages directly when the MCP is unavailable. Keep private repository details out of public queries. A BSELA integration is optional. Route on repository evidence unless the task explicitly authorizes the relevant BSELA data and an appropriate tool is available. Use authorized, sanitized evidence for routing or proposals. [OpenAI Docs MCP](https://developers.openai.com/learn/docs-mcp)
+
+## Maintenance
+
+Run `scripts/codex-health.sh --repo` for the offline repository smoke check and `python3 scripts/check-codex-config.py` with a current Codex CLI to verify native project configuration loading. CI runs the offline contract and regression checks. The isolated startup probe loads only the project configuration and does not start an agent or test roles on a live provider.
+
+`scripts/codex-health.sh --local` checks the current CLI environment with Codex Doctor, strict base startup configuration and plugin and MCP inventories. It lists available profile filenames. Doctor may perform its own redacted provider diagnostics. Running the command with no scope runs both repository and local checks.
+
+After a CLI upgrade, use the governor to check current official docs, role availability and drift. A live verification of a new role should use a fresh session, a single harmless task and the parent's intended permissions. Record which roles, tools and client surfaces were exercised and any gaps in that evidence.
 
 ## Local installation (approval required)
 
 ```bash
-scripts/install-codex-local.sh            # dry-run (default)
-scripts/install-codex-local.sh --agents-only # preview agents, preserve personal skills
-scripts/install-codex-local.sh --agents-only --apply # install four agents only
-scripts/smoke-test-codex.sh --live --agents-only # verify installed agents
+scripts/install-codex-local.sh --agents-only          # preview the six copies
+scripts/install-codex-local.sh --agents-only --apply  # install after approval
+scripts/smoke-test-codex.sh --live --agents-only      # compare installed agent files
 ```
 
-Use `--agents-only` when `~/.agents/skills/` contains your canonical personal skill directories and `~/.codex/skills/` mirrors them. It copies only the four agents to `~/.codex/agents/`; every personal skill path stays untouched. Repository skills remain available when this repository is open.
+Use `--agents-only` when `~/.agents/skills/` contains canonical personal skill directories. The full installer also manages the three skill links under `~/.codex/skills/` and `~/.agents/skills/`. It refuses directory collisions for skill links and checks the selected sources and destinations before writing. The installer applies to the documented paths under your home directory.
 
-Without `--agents-only`, the full installer also repoints the three managed skill symlinks under `~/.codex/skills/` and `~/.agents/skills/` at this repo. Existing skill directories are refused; the full installer does not replace a canonical personal library. It checks all selected sources and collisions before making changes. Run `scripts/smoke-test-codex.sh --live` to verify a full installation.
+Every apply records a manifest under `~/.codex/install-manifests/`. Backups live under `~/.agents/backups/`. If restoring, use the genuine manifest for the latest install and inspect any intervening changes to the managed paths first. Rollback validates the complete manifest before restoring its recorded files and links. Older manifests with the original backup layout are supported.
 
-Dry-run is the default and writes nothing. `--apply` requires explicit approval. Every applied file/link change is recorded in a rollback manifest under `~/.codex/install-manifests/`, with original agent files backed up under `~/.agents/backups/codex-native-install-<timestamp>/`. Use `scripts/install-codex-local.sh --rollback <manifest>` to restore the prior files and links. Existing manifests with older backup locations remain usable. Rollback leaves manifest/backup records and any created parent directories in place.
-
-## Drift and rollback
-
-- Codex adapters can drift from the canonical agents; CI contract greps guard the key rules.
-- Claude/Cursor are retired — there is nothing to resync, and no legacy deploy script remains.
-- Rollback: restore from the installer manifest and revert the feature branch. Desktop app, VS Code extension, CLI profiles, and global config are never touched.
+```bash
+scripts/install-codex-local.sh --rollback /absolute/path/to/install-TIMESTAMP-PID.manifest
+```

@@ -1,22 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="360" height="586" viewBox="0 0 360 586" role="img" aria-labelledby="title">
-<title id="title">Main session coordinates planner, builder and reviewer. Governor proposes approved upgrades on demand.</title>
-<rect width="360" height="586" rx="8" fill="#111110"/>
-<text x="24" y="34" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" letter-spacing="1">THE MAIN SESSION COORDINATES</text>
-<rect x="24" y="64" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
-<text x="42" y="93" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >01 / PLAN</text>
-<text x="42" y="117" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >planner · read-only</text>
-<rect x="24" y="166" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
-<text x="42" y="195" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >02 / BUILD</text>
-<text x="42" y="219" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >builder · scoped changes</text>
-<rect x="24" y="268" width="312" height="72" rx="4" fill="#1B1A18" stroke="#393632"/>
-<text x="42" y="297" fill="#F3F0EB" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="400" >03 / REVIEW</text>
-<text x="42" y="321" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" >reviewer · read-only</text>
-<path d="M180 136v30m-4-6 4 6 4-6M180 238v30m-4-6 4 6 4-6" fill="none" stroke="#FF7F0E"/>
-<text x="24" y="374" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Pass the checks and review.</text>
-<text x="24" y="398" fill="#B5B0A8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Otherwise revise within the loop cap.</text>
-<text x="24" y="458" fill="#FF7F0E" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" >04 / GOVERNOR</text>
-<text x="24" y="485" fill="#F3F0EB" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >On-demand audit → upgrade proposals.</text>
-<text x="24" y="510" fill="#B5B0A8" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" >Changes require approval.</text>
-<text x="24" y="549" fill="#B5B0A8" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" >PARENT MODEL · 3-THREAD CAP</text>
-<path d="M24 426H336" stroke="#393632"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="474" viewBox="0 0 360 474" role="img" aria-labelledby="title">
+  <title id="title">Main session coordinates evidence, planning, implementation, review and on-demand audits</title>
+  <rect width="360" height="474" rx="13" fill="#111110"/>
+  <g fill="#1B1A18" stroke="#393632">
+    <rect x="20" y="76" width="320" height="38" rx="6"/>
+    <rect x="20" y="120" width="320" height="38" rx="6"/>
+    <rect x="20" y="182" width="320" height="43" rx="6"/>
+    <rect x="20" y="239" width="320" height="43" rx="6"/>
+    <rect x="20" y="296" width="320" height="43" rx="6"/>
+  </g>
+  <path d="M41 225v11m-4-4 4 4 4-4m-4 50v11m-4-4 4 4 4-4" fill="none" stroke="#FF7F0E" stroke-width="1.4"/>
+  <path d="M20 170h320m0 239H20" stroke="#393632"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#FF7F0E" letter-spacing="1">
+    <text x="20" y="32">MAIN SESSION</text>
+    <text x="20" y="433">GOVERNOR</text>
+  </g>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#F3F0EB">
+    <text x="20" y="56" fill="#B5B0A8">Up to three concurrent child threads</text>
+    <text x="34" y="100">docs-researcher <tspan fill="#B5B0A8">· official sources</tspan></text>
+    <text x="34" y="144">repo-operator <tspan fill="#B5B0A8">· GitHub evidence</tspan></text>
+    <text x="34" y="209" font-weight="600">Plan</text>
+    <text x="145" y="209" fill="#B5B0A8">planner</text>
+    <text x="34" y="266" font-weight="600">Build</text>
+    <text x="145" y="266" fill="#B5B0A8">builder</text>
+    <text x="34" y="323" font-weight="600">Review</text>
+    <text x="145" y="323" fill="#B5B0A8">reviewer</text>
+    <g fill="#B5B0A8">
+      <text x="20" y="366">Finish after checks and review pass.</text>
+      <text x="20" y="389">Otherwise revise within the loop cap.</text>
+      <text x="20" y="455">Audits and proposes upgrades for approval.</text>
+    </g>
+  </g>
 </svg>

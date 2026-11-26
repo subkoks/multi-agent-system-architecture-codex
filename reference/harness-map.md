@@ -1,22 +1,14 @@
-# Harness map — Codex canonical
+# Codex harness map
 
-This repo is the **authoring root** for the BLACK.TERMINAL multi-agent + loop layer. Codex is the canonical runtime; other harnesses consume the same ideas and get no parallel agent tree.
+This repository is the authoring root for the BLACK.TERMINAL Codex multi-agent architecture. The main session coordinates the work, and the six specialist agents operate on explicitly assigned scopes.
 
-| Surface | Status | Where it lives | Orchestrator | Fan-out | Loops | Deploy path |
-|---|---|---|---|---|---|---|
-| **Codex** (canonical) | active | repo `.codex/agents`, `.codex/config.toml`; `~/.codex/*` after install | main session + `AGENTS.md` | subagent workflows (cap 3 threads) | `$loop` skill + monitored shell | `scripts/install-codex-local.sh --apply` (approval) |
-| **Grok Build** | active (secondary) | `~/.agents/skills` (orchestrate, closed-loop, loop, …) | main session | subagents / Task | `$loop` skill + monitor | skill install; no separate agent zoo |
-| Claude Code | retired 2026-09-13 | git history + `BUILD.md` Phases 1–E | — | — | — | removed |
-| Cursor | retired 2026-09-13 | git history + `BUILD.md` Phase C | — | — | — | removed |
+| Need | Native surface | Repository source |
+| --- | --- | --- |
+| Project permissions, search and delegation cap | Trusted project configuration | [`.codex/config.toml`](../.codex/config.toml) |
+| Independent planning, execution, verification and evidence | Custom subagent definitions | [`.codex/agents/`](../.codex/agents/) |
+| Workflow and gate instructions | Discovered project skills | [`skills/`](../skills/) · [`.agents/skills/`](../.agents/skills/) |
+| A recurring check inside the current session | Available wait and monitoring tools, with a finite stop condition | [Session loop](../skills/loop/SKILL.md) |
+| Optional public developer documentation | OpenAI Docs MCP or official web pages | [Tools and usage](../CODEX.md#models-tools-and-usage) |
+| Local roles shared across projects | Explicitly authorized install | [Installation and rollback](../CODEX.md#local-installation-approval-required) |
 
-## Shared rules (all active harnesses)
-
-- Native-first: main session orchestrates; specialists are narrow.
-- Closed build work → eval gate (tests + review + types + lint).
-- No unbounded loops without a turn/budget cap.
-- Governance files (`~/AGENTS.md`, `~/.claude/*`, `~/.cursor/*`, Codex/OpenCode mirrors) are Hard Stop — propose only.
-- Author in this repo → review → deploy. Never silent overwrite of live config.
-
-## When to add a harness-specific file
-
-Only when a primitive is genuinely different. Prefer one paragraph in this map over a new skill fork.
+Codex CLI, the IDE extension and the desktop app share the project layout. Tool availability and permissions depend on the client and parent session. Earlier Claude Code and Cursor setups are recorded in [BUILD.md](../BUILD.md).

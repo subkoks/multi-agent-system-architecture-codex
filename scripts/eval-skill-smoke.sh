@@ -55,14 +55,16 @@ require_file "skills/loop/SKILL.md"
 
 # orchestrate contracts
 require_grep "skills/orchestrate/SKILL.md" 'Depth cap' "orchestrate: depth cap"
-require_grep "skills/orchestrate/SKILL.md" 'bsela_route' "orchestrate: bsela_route"
+require_grep "skills/orchestrate/SKILL.md" 'bsela_route.*authorizes BSELA' "orchestrate: authorized BSELA routing"
+require_grep "skills/orchestrate/SKILL.md" 'docs-researcher' "orchestrate: docs specialist"
+require_grep "skills/orchestrate/SKILL.md" 'repo-operator' "orchestrate: repository specialist"
 require_grep "skills/orchestrate/SKILL.md" 'Hard Stops|Hard Stop' "orchestrate: Hard Stops"
 require_grep "skills/orchestrate/SKILL.md" 'Eval gate' "orchestrate: eval gate"
 
 # closed-loop contracts
 require_grep "skills/closed-loop/SKILL.md" 'MAX_ITERATIONS' "closed-loop: MAX_ITERATIONS"
 require_grep "skills/closed-loop/SKILL.md" 'reviewer' "closed-loop: reviewer leg"
-require_grep "skills/closed-loop/SKILL.md" 'Never.*report.*DONE|Never reports' "closed-loop: never claim done on red gate"
+require_grep "skills/closed-loop/SKILL.md" 'Never report.*DONE' "closed-loop: never claim done on red gate"
 require_grep "skills/closed-loop/SKILL.md" 'governance|AGENTS.md' "closed-loop: governance off-limits"
 
 # loop contracts

@@ -56,7 +56,7 @@ def main():
         bin_dir = root / "bin"
         bin_dir.mkdir()
         codex = bin_dir / "codex"
-        codex.write_text("#!/bin/sh\nexit 0\n")
+        codex.write_text("#!/bin/sh\necho unexpected Codex invocation >&2\nexit 1\n")
         codex.chmod(0o755)
         home = root / "home"
         home.mkdir()
@@ -78,14 +78,12 @@ def main():
                 assert not result.stdout
                 assert result.stderr == "[ERR ] unknown option: --invalid\n"
 
-        # Multiple independent failures must all be reported, including the CLI check.
+        # Multiple independent failures must all be reported, including in quiet mode.
         for skill in ("loop", "orchestrate"):
             (fixture / ".agents/skills" / skill).unlink()
-        codex.write_text("#!/bin/sh\nexit 1\n")
         expected_smoke = [
-            "[FAIL] .agents/skills/orchestrate missing or does not resolve",
-            "[FAIL] .agents/skills/loop missing or does not resolve",
-            "[FAIL] codex --strict-config rejected project",
+            "[FAIL] .agents/skills/orchestrate missing or does not resolve to the canonical skill",
+            "[FAIL] .agents/skills/loop missing or does not resolve to the canonical skill",
         ]
         # A missing skill exercises both the file check and every dependent contract.
         expected_skill = [
