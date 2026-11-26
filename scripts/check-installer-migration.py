@@ -8,7 +8,7 @@ import tempfile
 
 
 REPO = Path(__file__).resolve().parent.parent
-NAMES = ("planner", "governor", "builder", "reviewer")
+NAMES = ("planner", "governor", "builder", "reviewer", "docs-researcher", "repo-operator")
 SKILLS = ("orchestrate", "closed-loop", "loop")
 
 
@@ -96,6 +96,7 @@ def main():
         skill_state = {key: value for key, value in before.items()
                        if "/skills" in key}
         run(env, installer, ["--agents-only", "--apply"])
+        assert {path.stem for path in agents.glob("*.toml")} == set(NAMES)
         for name in NAMES:
             assert (agents / f"{name}.toml").read_bytes() == (
                 REPO / ".codex/agents" / f"{name}.toml").read_bytes()
@@ -109,7 +110,22 @@ def main():
 
         manifests = list((home / ".codex/install-manifests").glob("*.manifest"))
         assert len(manifests) == 1
-        run(env, installer, ["--rollback", str(manifests[0])])
+        manifest = manifests[0]
+        records = manifest.read_text()
+        manifest.write_text(records + "malformed late row\n")
+        before_bad_rollback = snapshot(home)
+        result = run(env, installer, ["--rollback", str(manifest)], status=1)
+        assert "malformed rollback manifest row" in result.stderr
+        assert snapshot(home) == before_bad_rollback, "invalid manifest changed fake home"
+
+        # The original installer stored backups alongside the manifest.
+        legacy_manifest = manifest.with_name(manifest.stem.rsplit("-", 1)[0] + ".manifest")
+        legacy_backup = legacy_manifest.with_suffix(".backup")
+        legacy_backup.mkdir()
+        current_backup = next((home / ".agents/backups").glob("codex-native-install-*"))
+        (current_backup / "planner.toml").rename(legacy_backup / "planner.toml")
+        legacy_manifest.write_text(records.replace(str(current_backup), str(legacy_backup)))
+        run(env, installer, ["--rollback", str(legacy_manifest)])
         assert (agents / "planner.toml").read_text() == "prior planner\n"
         for name in NAMES[1:]:
             assert not (agents / f"{name}.toml").exists()
@@ -127,6 +143,12 @@ def main():
                         CODEX_HOME=str(full_home / ".codex"))
         old_link = full_home / ".agents/skills/loop"
         old_link.parent.mkdir(parents=True)
+        old_link.symlink_to(root / "unrepresentable target\n")
+        before_unsupported_target = snapshot(full_home)
+        refused_target = run(full_env, installer, ["--apply"], status=1)
+        assert "link target cannot be represented" in refused_target.stderr
+        assert snapshot(full_home) == before_unsupported_target, "invalid link target caused writes"
+        old_link.unlink()
         old_link.symlink_to(root / "prior missing skill")
         full_before = snapshot(full_home)
         run(full_env, installer, [])
